@@ -2,8 +2,6 @@
 
 namespace QCheck;
 
-use QCheck\RewindableIterator;
-
 class FP {
 
     static function partial() {

@@ -2,8 +2,6 @@
 
 namespace QCheck;
 
-use QCheck\FP;
-
 class RoseTree {
     private $root;
     private $children;

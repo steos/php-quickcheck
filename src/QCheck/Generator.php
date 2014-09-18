@@ -2,10 +2,6 @@
 
 namespace QCheck;
 
-use QCheck\FP;
-use QCheck\RoseTree;
-use QCheck\Random;
-
 class Generator {
     private $gen;
 

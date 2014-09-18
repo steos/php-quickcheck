@@ -3,12 +3,10 @@
 namespace QCheck;
 
 use QCheck\Generator as Gen;
-use QCheck\Random;
-use QCheck\RoseTree;
 
 class Quick {
 
-    static function check($n, Generator $prop, array $opts = []) {
+    static function check($n, Gen $prop, array $opts = []) {
         $maxSize = @$opts['max_size'] ?: 200;
         $seed = @$opts['seed'] ?: intval(1000 * microtime(true));
         $rng = new Random($seed);
@@ -27,7 +25,7 @@ class Quick {
         return self::complete($prop, $n, $seed);
     }
 
-    static function complete(Generator $prop, $n, $seed) {
+    static function complete(Gen $prop, $n, $seed) {
         return ['result' => true,
                 'num_tests' => $n,
                 'seed' => $seed];
@@ -40,7 +38,7 @@ class Quick {
                 'smallest' => $smallest['args']];
     }
 
-    static function failure(Generator $prop, RoseTree $tree, $n, $size, $seed) {
+    static function failure(Gen $prop, RoseTree $tree, $n, $size, $seed) {
         $root = $tree->getRoot();
         $result = $root['result'];
         $args = $root['args'];

@@ -3,8 +3,6 @@
 namespace QCheck;
 
 use QCheck\Generator as Gen;
-use QCheck\Quick;
-use QCheck\FP;
 
 class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
     /**
