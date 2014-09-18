@@ -240,6 +240,22 @@ class Generator {
         }, $maxTries);
     }
 
+    static function booleans() {
+        return self::elements(false, true);
+    }
+
+    static function posInts() {
+        return self::ints()->fmap(function($x) {
+            return abs($x);
+        });
+    }
+
+    static function negInts() {
+        return self::posInts()->fmap(function($x) {
+            return -$x;
+        });
+    }
+
     static function forAll(array $args, callable $f) {
         $tuples = call_user_func_array([__CLASS__, 'tuples'], $args);
         return $tuples->fmap(function($args) use ($f) {
