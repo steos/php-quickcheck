@@ -220,6 +220,26 @@ class Generator {
             });
     }
 
+    function suchThat(callable $pred, $maxTries = 10) {
+        return new self(function($rng, $size) use ($pred, $maxTries) {
+            for ($i = 0; $i < $maxTries; ++$i) {
+                $value = $this->call($rng, $size);
+                if (call_user_func($pred, $value->getRoot())) {
+                    return $value->filter($pred);
+                }
+                $size++;
+            }
+            throw new \RuntimeException(
+                "couldn't satisfy such-that predicate after $maxTries tries.");
+        });
+    }
+
+    function notEmpty($maxTries = 10) {
+        return $this->suchThat(function($x) {
+            return !empty($x);
+        }, $maxTries);
+    }
+
     static function forAll(array $args, callable $f) {
         $tuples = call_user_func_array([__CLASS__, 'tuples'], $args);
         return $tuples->fmap(function($args) use ($f) {
