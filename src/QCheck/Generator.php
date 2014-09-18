@@ -175,12 +175,35 @@ class Generator {
         return self::choose(32, 126)->fmap('chr');
     }
 
+    static function alphaNumChars() {
+        return self::oneOf(
+            self::choose(48, 57),
+            self::choose(65, 90),
+            self::choose(97, 122)
+        )->fmap('chr');
+    }
+
+    static function alphaChars() {
+        return self::oneOf(
+            self::choose(65, 90),
+            self::choose(97, 122)
+        )->fmap('chr');
+    }
+
+    static function strings() {
+        return self::chars()->lists()->fmap('QCheck\FP::str');
+    }
+
     static function asciiStrings() {
-        return self::asciiChars()
-            ->lists()
-            ->fmap(function($xs) {
-                return implode('', $xs);
-            });
+        return self::asciiChars()->lists()->fmap('QCheck\FP::str');
+    }
+
+    static function alphaNumStrings() {
+        return self::alphaNumChars()->lists()->fmap('QCheck\FP::str');
+    }
+
+    static function alphaStrings() {
+        return self::alphaChars()->lists()->fmap('QCheck\FP::str');
     }
 
     static function maps(self $keygen, self $valgen) {

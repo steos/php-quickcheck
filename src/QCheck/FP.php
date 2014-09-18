@@ -146,4 +146,8 @@ class FP {
             return func_get_args();
         };
     }
+
+    static function str(array $chars) {
+        return implode('', $chars);
+    }
 }
