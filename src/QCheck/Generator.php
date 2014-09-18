@@ -206,6 +206,20 @@ class Generator {
             });
     }
 
+    static function elements() {
+        $coll = func_get_args();
+        if (empty($coll)) {
+            throw new \InvalidArgumentException();
+        }
+        return self::choose(0, count($coll) - 1)
+            ->bindGen(function(RoseTree $rose) use ($coll) {
+                return self::pureGen($rose->fmap(
+                    function($index) use ($coll) {
+                        return $coll[$index];
+                    }));
+            });
+    }
+
     static function forAll(array $args, callable $f) {
         $tuples = call_user_func_array([__CLASS__, 'tuples'], $args);
         return $tuples->fmap(function($args) use ($f) {
