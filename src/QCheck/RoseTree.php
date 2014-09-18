@@ -35,9 +35,11 @@ class RoseTree {
     function join() {
         $innerRoot = $this->root->getRoot();
         $innerChildren = $this->root->getChildren();
-        return new self($innerRoot, FP::rgen(FP::concat(
+        $newChildren = FP::rgen(FP::concat(
             FP::map(FP::method('join'), $this->children),
-            $innerChildren)));
+            $innerChildren
+        ));
+        return new self($innerRoot, $newChildren);
     }
 
     function bind(callable $f) {

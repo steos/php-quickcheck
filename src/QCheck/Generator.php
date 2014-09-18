@@ -56,6 +56,18 @@ class Generator {
         });
     }
 
+    function bind(callable $k) {
+        return $this->bindGen(
+            function(RoseTree $rose) use ($k) {
+                $gen = new self(function($rng, $size) use ($rose, $k) {
+                    return $rose->fmap($k)
+                        ->fmap(FP::method('call', $rng, $size));
+                });
+                return $gen->fmapGen(FP::method('join'));
+            }
+        );
+    }
+
     static function unit($value) {
         return self::pureGen(RoseTree::pure($value));
     }
@@ -179,6 +191,18 @@ class Generator {
                     $map[$key] = $val;
                 }
                 return $map;
+            });
+    }
+
+    static function oneOf() {
+        $generators = func_get_args();
+        $num = count($generators);
+        if ($num < 2) {
+            throw new \InvalidArgumentException();
+        }
+        return self::choose(0, $num - 1)
+            ->bind(function($index) use ($generators) {
+                return $generators[$index];
             });
     }
 
