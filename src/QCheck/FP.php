@@ -150,4 +150,35 @@ class FP {
     static function str(array $chars) {
         return implode('', $chars);
     }
+
+    static function iterator($xs) {
+        if (is_array($xs)) {
+            return new \ArrayIterator($xs);
+        }
+        if (!$xs instanceof \Iterator) {
+            throw new \InvalidArgumentException();
+        }
+        return $xs;
+    }
+
+    static function takeNth($n, $coll) {
+        $coll = self::iterator($coll);
+        for ($coll->rewind(); $coll->valid(); $coll->next()) {
+            yield $coll->current();
+            for ($i = 0; $i < $n - 1 && $coll->valid(); ++$i) {
+                $coll->next();
+            }
+        }
+    }
+
+    function partition($n, $coll) {
+        $coll = self::iterator($coll);
+        for ($coll->rewind(); $coll->valid();) {
+            $partition = [];
+            for ($i = 0; $i < $n && $coll->valid(); ++$i, $coll->next()) {
+                $partition[] = $coll->current();
+            }
+            yield $partition;
+        }
+    }
 }
