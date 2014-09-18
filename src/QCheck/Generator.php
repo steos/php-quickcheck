@@ -289,6 +289,27 @@ class Generator {
         });
     }
 
+    static function frequency() {
+        $args = func_get_args();
+        $argc = count($args);
+        if ($argc < 2 || $argc % 2 != 0) {
+            throw new \InvalidArgumentException();
+        }
+        $total = array_sum(FP::realize(FP::takeNth(2, $args)));
+        $pairs = FP::realize(FP::partition(2, $args));
+        return self::choose(1, $total)->bindGen(
+            function(RoseTree $rose) use ($pairs) {
+                $n = $rose->getRoot();
+                foreach ($pairs as $pair) {
+                    list($chance, $gen) = $pair;
+                    if ($n <= $chance) {
+                        return $gen;
+                    }
+                    $n = $n - $chance;
+                }
+            });
+    }
+
     static function forAll(array $args, callable $f) {
         $tuples = call_user_func_array([__CLASS__, 'tuples'], $args);
         return $tuples->fmap(function($args) use ($f) {
