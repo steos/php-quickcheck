@@ -155,12 +155,12 @@ class Generator {
         });
     }
 
-    static function lists(self $gen) {
+    function lists() {
         $sized = self::sized(function($s) {
             return self::choose(0, $s);
         });
-        return $sized->bindGen(function($numRose) use ($gen) {
-            $seq = self::sequence(FP::repeat($numRose->getRoot(), $gen));
+        return $sized->bindGen(function($numRose) {
+            $seq = self::sequence(FP::repeat($numRose->getRoot(), $this));
             return $seq->bindGen(function($roses) {
                 return self::pureGen(RoseTree::shrink(FP::args(), $roses));
             });
@@ -176,14 +176,16 @@ class Generator {
     }
 
     static function asciiStrings() {
-        return self::lists(self::asciiChars())
+        return self::asciiChars()
+            ->lists()
             ->fmap(function($xs) {
                 return implode('', $xs);
             });
     }
 
     static function maps(self $keygen, self $valgen) {
-        return self::lists(self::tuples($keygen, $valgen))
+        return self::tuples($keygen, $valgen)
+            ->lists()
             ->fmap(function($tuples) {
                 $map = [];
                 foreach ($tuples as $tuple) {
@@ -192,6 +194,14 @@ class Generator {
                 }
                 return $map;
             });
+    }
+
+    function mapsTo(self $valgen) {
+        return self::maps($this, $valgen);
+    }
+
+    function mapsFrom(self $keygen) {
+        return self::maps($keygen, $this);
     }
 
     static function oneOf() {
