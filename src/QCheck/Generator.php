@@ -261,8 +261,8 @@ class Generator {
     }
 
     static function negInts() {
-        return self::posInts()->fmap(function($x) {
-            return -$x;
+        return self::ints()->fmap(function($x) {
+            return -abs($x);
         });
     }
 
