@@ -142,6 +142,12 @@ class Generator {
         });
     }
 
+    function resize($n) {
+        return new self(function($rng, $size) use ($n) {
+            return $this->call($rng, $n);
+        });
+    }
+
     static function tuples() {
         $seq = self::sequence(func_get_args());
         return $seq->bindGen(function($roses) {
@@ -308,6 +314,68 @@ class Generator {
                     $n = $n - $chance;
                 }
             });
+    }
+
+    static function simpleTypes() {
+        return self::oneOf(
+            self::ints(),
+            self::chars(),
+            self::strings(),
+            self::booleans()
+        );
+    }
+
+    static function simplePrintableTypes() {
+        return self::oneOf(
+            self::ints(),
+            self::asciiChars(),
+            self::asciiStrings(),
+            self::booleans()
+        );
+    }
+
+    static function containerTypes(self $innerType) {
+        return self::oneOf(
+            $innerType->lists(),
+            $innerType->mapsFrom(self::oneOf(self::ints(), self::strings()))
+        );
+    }
+
+    static private function
+    recursiveHelper($container, $scalar, $scalarSize, $childrenSize, $height) {
+        if ($height == 0) {
+            return $scalar->resize($scalarSize);
+        } else {
+            return call_user_func(
+                $container,
+                self::recursiveHelper(
+                    $container, $scalar, $scalarSize, $childrenSize, $height - 1
+                )
+            );
+        }
+    }
+
+    static function recursive(callable $container, self $scalar) {
+        return self::sized(function($size) use ($container, $scalar) {
+            return self::choose(1, 5)->bind(
+                function($height) use ($container, $scalar, $size) {
+                    $childrenSize = pow($size, 1/$height);
+                    return self::recursiveHelper(
+                        $container, $scalar, $size, $childrenSize, $height);
+                });
+        });
+    }
+
+    static function any() {
+        return self::recursive(
+            [__CLASS__, 'containerTypes'],
+            self::simpleTypes());
+    }
+
+    static function anyPrintable() {
+        return self::recursive(
+            [__CLASS__, 'containerTypes'],
+            self::simplePrintableTypes());
     }
 
     static function forAll(array $args, callable $f) {
