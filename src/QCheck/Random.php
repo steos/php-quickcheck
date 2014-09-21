@@ -25,7 +25,7 @@ class Random {
         if (PHP_INT_SIZE < 8) {
             throw new \RuntimeException('64 bit integer precision required');
         }
-        $this->setSeed($seed !== null ?: intval(1000 * microtime(true)));
+        $this->setSeed($seed !== null ? $seed : intval(1000 * microtime(true)));
     }
     function setSeed($seed) {
         $this->seed = self::mask($seed ^ self::MULTIPLIER);
