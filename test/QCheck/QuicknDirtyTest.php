@@ -24,7 +24,7 @@ class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
         $this->assertContainsOnly('string', $list);
     }
     function lists() {
-        return FP::take(20, Gen::tuples(Gen::asciiStrings()->lists())->samples());
+        return FP::take(20, Gen::tuples(Gen::asciiStrings()->intoArrays())->samples());
     }
 
     function testQuickCheckShrink() {

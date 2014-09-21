@@ -157,16 +157,20 @@ class Generator {
         });
     }
 
-    function lists() {
+    static function arraysOf(self $gen) {
         $sized = self::sized(function($s) {
             return self::choose(0, $s);
         });
-        return $sized->bindGen(function($numRose) {
-            $seq = self::sequence(FP::repeat($numRose->getRoot(), $this));
+        return $sized->bindGen(function($numRose) use ($gen) {
+            $seq = self::sequence(FP::repeat($numRose->getRoot(), $gen));
             return $seq->bindGen(function($roses) {
                 return self::pureGen(RoseTree::shrink(FP::args(), $roses));
             });
         });
+    }
+
+    function intoArrays() {
+        return self::arraysOf($this);
     }
 
     static function chars() {
@@ -193,24 +197,24 @@ class Generator {
     }
 
     static function strings() {
-        return self::chars()->lists()->fmap('QCheck\FP::str');
+        return self::chars()->intoArrays()->fmap('QCheck\FP::str');
     }
 
     static function asciiStrings() {
-        return self::asciiChars()->lists()->fmap('QCheck\FP::str');
+        return self::asciiChars()->intoArrays()->fmap('QCheck\FP::str');
     }
 
     static function alphaNumStrings() {
-        return self::alphaNumChars()->lists()->fmap('QCheck\FP::str');
+        return self::alphaNumChars()->intoArrays()->fmap('QCheck\FP::str');
     }
 
     static function alphaStrings() {
-        return self::alphaChars()->lists()->fmap('QCheck\FP::str');
+        return self::alphaChars()->intoArrays()->fmap('QCheck\FP::str');
     }
 
     static function maps(self $keygen, self $valgen) {
         return self::tuples($keygen, $valgen)
-            ->lists()
+            ->intoArrays()
             ->fmap(function($tuples) {
                 $map = [];
                 foreach ($tuples as $tuple) {
