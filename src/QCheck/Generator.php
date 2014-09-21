@@ -125,6 +125,13 @@ class Generator {
         return (int)floor($lower + ($factor * (1.0 + $upper) - $factor * $lower));
     }
 
+    static function getArgs(array $args) {
+        if (count($args) == 1 && is_array($args[0])) {
+            return $args[0];
+        }
+        return $args;
+    }
+
     // combinators and helpers
     // --------------------------------------------------
 
@@ -145,7 +152,7 @@ class Generator {
     }
 
     static function tuples() {
-        $seq = self::sequence(func_get_args());
+        $seq = self::sequence(self::getArgs(func_get_args()));
         return $seq->bindGen(function($roses) {
             return self::pureGen(RoseTree::zip(FP::args(), $roses));
         });
@@ -234,7 +241,7 @@ class Generator {
     }
 
     static function oneOf() {
-        $generators = func_get_args();
+        $generators = self::getArgs(func_get_args());
         $num = count($generators);
         if ($num < 2) {
             throw new \InvalidArgumentException();
@@ -246,7 +253,7 @@ class Generator {
     }
 
     static function elements() {
-        $coll = func_get_args();
+        $coll = self::getArgs(func_get_args());
         if (empty($coll)) {
             throw new \InvalidArgumentException();
         }
