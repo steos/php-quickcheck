@@ -240,6 +240,13 @@ class Generator {
         return self::maps($keygen, $this);
     }
 
+    static function mapsWith(array $map) {
+        $keys = array_keys($map);
+        return self::tuples($map)->fmap(function($vals) use ($keys) {
+            return FP::zipmap($keys, $vals);
+        });
+    }
+
     static function oneOf() {
         $generators = self::getArgs(func_get_args());
         $num = count($generators);

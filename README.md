@@ -4,7 +4,7 @@ PhpQuickCheck is a generative testing library for PHP based on
 clojure.test.check.
 
 > Don't write tests. Generate them.
-> -John Hughes
+> - John Hughes
 
 ## Huh?
 
@@ -127,6 +127,26 @@ $bindSample = Gen::ints()->intoArrays()->notEmpty()
 $bindSample->takeSamples();
 # => [..., [[4,-2,5,3,5],4],[[-3,5,5,6,2],5],[[1,-3,1,5,2],-3], ...]
 
+// maps from string keys to daytimes
+$daytimes->mapsFrom(Gen::alphaStrings()->notEmpty())->notEmpty()->takeSamples();
+# => [{"v":"08:36"},{"i":"03:43","E":"14:38"},{"gUU":"03:08","UIc":"19:24"}, ...]
+
+// maps from strings to booleans
+Gen::alphaStrings()->notEmpty()->mapsTo(Gen::booleans())->notEmpty()->takeSamples();
+# => [{"J":true},{"pt":true,"TgQ":false},{"M":true,"jL":false},{"rm":true}, ...]
+
+// maps with fixed keys
+Gen::mapsWith([
+    'age'       => Gen::choose(18, 99),
+    'name'      => Gen::tuples(
+                       Gen::elements('Ada', 'Grace', 'Hedy'),
+                       Gen::elements('Lovelace', 'Hopper', 'Lamarr')
+                   )->fmap(function($name) {
+                       return "$name[0] $name[1]";
+                   })
+])->takeSamples();
+# => [{"age":50,"name":"Ada Lamarr"},{"age":97,"name":"Ada Hopper"},
+#     {"age":81,"name":"Ada Lovelace"},{"age":55,"name":"Hedy Lamarr"}, ...]
 ```
 
 ## Project Status
