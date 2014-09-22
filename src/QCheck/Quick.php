@@ -52,23 +52,22 @@ class Quick {
     }
 
     static function shrinkLoop(RoseTree $tree) {
-        $nodes = $tree->getChildren();
+        $nodes = FP::realize($tree->getChildren());
         $smallest = $tree->getRoot();
         $visited = 0;
         $depth = 0;
-        for ($nodes->rewind(); $nodes->valid();) {
-            $head = $nodes->current();
-            $nodes->next();
+        for ($i = 0; $i < count($nodes); ++$i) {
+            $head = $nodes[$i];
             $root = $head->getRoot();
             $result = $root['result'];
             if (!$result || $result instanceof \Exception) {
-                $children = $head->getChildren();
+                $children = FP::realize($head->getChildren());
                 if (empty($children)) {
                     $smallest = $root;
                     $visited++;
                 } else {
                     $nodes = $children;
-                    $nodes->rewind();
+                    $i = -1;
                     $smallest = $root;
                     $visited++;
                     $depth++;
