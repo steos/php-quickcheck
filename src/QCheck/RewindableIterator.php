@@ -12,11 +12,6 @@ class RewindableIterator implements \Iterator {
     private $it;
     function __construct(\Iterator $gen) {
         $this->gen = $gen;
-        $this->it = new \ArrayIterator();
-        $this->gen->rewind();
-        if ($this->gen->valid()) {
-            $this->it->append($this->gen->current());
-        }
     }
     function key() {
         return $this->it->key();
@@ -37,6 +32,14 @@ class RewindableIterator implements \Iterator {
         }
     }
     function rewind() {
-        $this->it->rewind();
+        if ($this->it === null) {
+            $this->it = new \ArrayIterator();
+            $this->gen->rewind();
+            if ($this->gen->valid()) {
+                $this->it->append($this->gen->current());
+            }
+        } else {
+            $this->it->rewind();
+        }
     }
 }
