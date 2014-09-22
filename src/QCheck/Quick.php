@@ -18,7 +18,13 @@ class Quick {
             $result = $resultMap['result'];
             $args = $resultMap['args'];
             if (!$result || $result instanceof \Exception) {
+                if (@$opts['echo']) {
+                    echo 'F', PHP_EOL;
+                }
                 return self::failure($prop, $resultMapRose, $i, $size, $seed);
+            }
+            if (@$opts['echo']) {
+                echo '.';
             }
             // TODO: trial reporting
         }
