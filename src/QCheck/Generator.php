@@ -350,7 +350,7 @@ class Generator {
 
     static function containerTypes(self $innerType) {
         return self::oneOf(
-            $innerType->lists(),
+            $innerType->intoArrays(),
             $innerType->mapsFrom(self::oneOf(self::ints(), self::strings()))
         );
     }
