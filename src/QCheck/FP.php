@@ -169,7 +169,7 @@ class FP {
         }
     }
 
-    function partition($n, $coll) {
+    static function partition($n, $coll) {
         $coll = self::iterator($coll);
         for ($coll->rewind(); $coll->valid();) {
             $partition = [];
@@ -180,7 +180,7 @@ class FP {
         }
     }
 
-    function zipmap($keys, $vals) {
+    static function zipmap($keys, $vals) {
         $keys = self::realize($keys);
         $vals = self::realize($vals);
         if (count($keys) != count($vals)) {
