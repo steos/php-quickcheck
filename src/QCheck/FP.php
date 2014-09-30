@@ -14,7 +14,7 @@ class FP {
 
     static function reduce(callable $f, $xs, $initial = null) {
         if (is_array($xs)) {
-            $initial !== null ? $initial : array_shift($xs);
+            $initial = $initial !== null ? $initial : array_shift($xs);
             return array_reduce($xs, $f, $initial);
         }
         if ($xs instanceof \Iterator) {
