@@ -241,9 +241,8 @@ class Generator {
     }
 
     static function mapsWith(array $map) {
-        $keys = array_keys($map);
-        return self::tuples($map)->fmap(function($vals) use ($keys) {
-            return FP::zipmap($keys, $vals);
+        return self::tuples($map)->fmap(function($vals) use ($map) {
+            return array_combine(array_keys($map), $vals);
         });
     }
 

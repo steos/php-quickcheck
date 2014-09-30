@@ -179,17 +179,4 @@ class FP {
             yield $partition;
         }
     }
-
-    static function zipmap($keys, $vals) {
-        $keys = self::realize($keys);
-        $vals = self::realize($vals);
-        if (count($keys) != count($vals)) {
-            throw new \InvalidArgumentException();
-        }
-        $map = [];
-        foreach ($keys as $index => $key) {
-            $map[$key] = $vals[$index];
-        }
-        return $map;
-    }
 }
