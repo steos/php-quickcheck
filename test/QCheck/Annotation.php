@@ -56,6 +56,69 @@ class _AnnotationTestClass {
      * @param string|int $a
      */
     function ambiguousdoc($a) {}
+
+    /**
+     * @param string $a
+     * @return bool
+     */
+    function check_str($a) {
+        return is_string($a);
+    }
+
+    /**
+     * @param int $a
+     * @return bool
+     */
+    function check_int($a) {
+        return is_int($a);
+    }
+
+    /**
+     * @param bool $a
+     * @return bool
+     */
+    function check_bool($a) {
+        return is_bool($a);
+    }
+
+    /**
+     * @param boolean $a
+     * @return bool
+     */
+    function check_boolean($a) {
+        return is_bool($a);
+    }
+
+    /**
+     * @param string[] $a
+     * @return bool
+     */
+    function check_array($a) {
+        if(! is_array($a)) {
+            return false;
+        }
+        foreach($a as $s) {
+            if(! is_string($s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param bool $a
+     * @param string $b
+     * @param int $c
+     * @param int[] $d
+     * @return bool
+     */
+    function check_multiple($a, $b, $c, $d) {
+        return is_bool($a) &&
+            is_string($b) &&
+            is_int($c) &&
+            is_array($d) &&
+            (count($d) == 0 || is_int($d[0]));
+    }
 }
 
 class AnnotationTest extends \PHPUnit_Framework_TestCase {
@@ -105,10 +168,29 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider getFaultyMethods
+     * @dataProvider getAmbiguousMethods
      * @expectedException QCheck\AmbiguousTypeAnnotationException
      */
     function testAmbiguousType($function) {
         Annotation::types(self::getCallable($function));
+    }
+
+    function getCheckMethods() {
+        return array(
+            array('check_str'),
+            array('check_int'),
+            array('check_bool'),
+            array('check_boolean'),
+            array('check_array'),
+            array('check_multiple'),
+        );
+    }
+
+    /**
+     * @dataProvider getCheckMethods
+     */
+    function testCheck($function) {
+        $res = Annotation::check(self::getCallable($function));
+        $this->assertTrue($res['result']);
     }
 }

@@ -5,6 +5,7 @@ namespace QCheck;
 class AnnotationException extends \Exception {}
 class MissingTypeAnnotationException extends AnnotationException {}
 class AmbiguousTypeAnnotationException extends AnnotationException {}
+class NoGeneratorAnnotationException extends AnnotationException {}
 
 /**
  * This class contains methods to determine the generator to use
@@ -81,6 +82,7 @@ class Annotation {
      * @param callable $f The function to test
      * @param callable $p The predicate
      * @param int $n number of iteration
+     * @throws NoGeneratorAnnotationException
      * @return array
      */
     static function check(callable $f, callable $p = null, $n = 10) {
@@ -90,8 +92,32 @@ class Annotation {
 
         $types = self::types($f);
 
+        $generators = array(
+            'bool' => 'booleans',
+        );
+
         $args = array();
-        $args[] = Generator::alphaStrings();
+        foreach($types as $t) {
+            $array = false;
+            if(substr($t, -2) == '[]') {
+                $t = substr($t, 0, -2);
+                $array = true;
+            }
+
+            if(array_key_exists($t, $generators)) {
+                $method = $generators[$t];
+            } else if(method_exists('QCheck\Generator', $t.'s')) {
+                $method = $t.'s';
+            } else {
+                throw new NoGeneratorAnnotationException("Unable to find a generator for $t");
+            }
+            $gen = call_user_func(array('QCheck\Generator', $method));
+
+            if($array) {
+                $gen = $gen->intoArrays();
+            }
+            $args[] = $gen;
+        }
 
         $check = function() use($f, $p) {
             $result = call_user_func_array($f, func_get_args());
