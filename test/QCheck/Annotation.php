@@ -2,6 +2,14 @@
 
 namespace QCheck;
 
+/**
+ * @param string $a
+ * @return bool
+ */
+function _annotation_test_function($a) {
+    return is_string($a);
+}
+
 class _AnnotationTestClass {
     /**
      * @param string $a
@@ -40,6 +48,13 @@ class _AnnotationTestClass {
      */
     function reverse($a, $b, $c) {}
 
+    /**
+     * @param int $b
+     * @param array $c
+     * @param string $a
+     */
+    static function static_method($a, $b, $c) {}
+
     function nodoc($a) {}
 
     /**
@@ -56,6 +71,11 @@ class _AnnotationTestClass {
      * @param string|int $a
      */
     function ambiguousdoc($a) {}
+
+    /**
+     * @param some_type $a
+     */
+    function nogenerator($a) {}
 
     /**
      * @param string $a
@@ -122,8 +142,36 @@ class _AnnotationTestClass {
 }
 
 class AnnotationTest extends \PHPUnit_Framework_TestCase {
-    static function getCallable($function) {
-        return array('QCheck\_AnnotationTestClass', $function);
+    static $test = null;
+
+    static function setUpBeforeClass() {
+        self::$test = new _AnnotationTestClass();
+    }
+
+    static function getNamespace() {
+        return 'QCheck\_AnnotationTestClass';
+    }
+
+    static function getArrayCallable($function) {
+        return array(self::getNamespace(), $function);
+    }
+
+    static function getStringCallable($function) {
+        return self::getNamespace().'::'.$function;
+    }
+
+    static function getObjectCallable($function) {
+        return array(self::$test, $function);
+    }
+
+    function testTypeByName() {
+        $type = Annotation::types('QCheck\_annotation_test_function');
+        $this->assertEquals($type, array('a' => 'string'));
+    }
+
+    function testCheckByName() {
+        $result = Annotation::check('QCheck\_annotation_test_function');
+        $this->assertTrue($result['result']);
     }
 
     function getMethods() {
@@ -134,6 +182,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
             array('str_str_str', array('a' => 'string', 'b' => 'string', 'c' => 'string')),
             array('str_int_arr', array('a' => 'string', 'b' => 'int', 'c' => 'array')),
             array('reverse', array('a' => 'string', 'b' => 'int', 'c' => 'array')),
+            array('static_method', array('a' => 'string', 'b' => 'int', 'c' => 'array')),
         );
     }
 
@@ -141,8 +190,13 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider getMethods
      */
     function testType($function, $types) {
-        $result = Annotation::types(self::getCallable($function));
-        $this->assertEquals($result, $types);
+        $array = Annotation::types(self::getArrayCallable($function));
+        $string = Annotation::types(self::getStringCallable($function));
+        $object = Annotation::types(self::getObjectCallable($function));
+
+        $this->assertEquals($array, $types);
+        $this->assertEquals($string, $types);
+        $this->assertEquals($object, $types);
     }
 
     function getFaultyMethods() {
@@ -157,8 +211,24 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider getFaultyMethods
      * @expectedException QCheck\MissingTypeAnnotationException
      */
-    function testNoType($function) {
-        Annotation::types(self::getCallable($function));
+    function testNoTypeString($function) {
+        Annotation::types(self::getStringCallable($function));
+    }
+
+    /**
+     * @dataProvider getFaultyMethods
+     * @expectedException QCheck\MissingTypeAnnotationException
+     */
+    function testNoTypeArray($function) {
+        Annotation::types(self::getArrayCallable($function));
+    }
+
+    /**
+     * @dataProvider getFaultyMethods
+     * @expectedException QCheck\MissingTypeAnnotationException
+     */
+    function testNoTypeObject($function) {
+        Annotation::types(self::getObjectCallable($function));
     }
 
     function getAmbiguousMethods() {
@@ -171,8 +241,54 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider getAmbiguousMethods
      * @expectedException QCheck\AmbiguousTypeAnnotationException
      */
-    function testAmbiguousType($function) {
-        Annotation::types(self::getCallable($function));
+    function testAmbiguousTypeString($function) {
+        Annotation::types(self::getStringCallable($function));
+    }
+
+    /**
+     * @dataProvider getAmbiguousMethods
+     * @expectedException QCheck\AmbiguousTypeAnnotationException
+     */
+    function testAmbiguousTypeArray($function) {
+        Annotation::types(self::getArrayCallable($function));
+    }
+
+    /**
+     * @dataProvider getAmbiguousMethods
+     * @expectedException QCheck\AmbiguousTypeAnnotationException
+     */
+    function testAmbiguousTypeObject($function) {
+        Annotation::types(self::getObjectCallable($function));
+    }
+
+    function getNoGeneratorMethods() {
+        return array(
+            array('nogenerator'),
+        );
+    }
+
+    /**
+     * @dataProvider getNoGeneratorMethods
+     * @expectedException QCheck\NoGeneratorAnnotationException
+     */
+    function testNoGeneratorTypeString($function) {
+        Annotation::check(self::getStringCallable($function));
+    }
+
+    /**
+     * @dataProvider getNoGeneratorMethods
+     * @expectedException QCheck\NoGeneratorAnnotationException
+     */
+    function testNoGeneratorTypeArray($function) {
+        Annotation::check(self::getArrayCallable($function));
+    }
+
+    /**
+     * @dataProvider getNoGeneratorMethods
+     * @expectedException QCheck\NoGeneratorAnnotationException
+     */
+    function testNoGeneratorTypeObject($function) {
+        Annotation::check(self::getObjectCallable($function));
     }
 
     function getCheckMethods() {
@@ -190,7 +306,12 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider getCheckMethods
      */
     function testCheck($function) {
-        $res = Annotation::check(self::getCallable($function));
-        $this->assertTrue($res['result']);
+        $array = Annotation::check(self::getArrayCallable($function));
+        $string = Annotation::check(self::getStringCallable($function));
+        $object = Annotation::check(self::getObjectCallable($function));
+
+        $this->assertTrue($array['result']);
+        $this->assertTrue($string['result']);
+        $this->assertTrue($object['result']);
     }
 }
