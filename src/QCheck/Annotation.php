@@ -35,6 +35,7 @@ class Annotation {
         } else if(is_object($f) && method_exists($f, '__invoke')) {
             return new \ReflectionMethod($f, '__invoke');
         }
+        // if the tests above are exhaustive, we should never hit the next line.
         throw new AnnotationException("Unable to determine callable type.");
     }
 
