@@ -146,6 +146,14 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     static function setUpBeforeClass() {
         self::$test = new _AnnotationTestClass();
+
+        /**
+         * @param string $a
+         * @return bool
+         */
+        self::$fun = function($a) {
+            return is_string($a);
+        };
     }
 
     static function getNamespace() {
@@ -171,6 +179,16 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckByName() {
         $result = Annotation::check('QCheck\_annotation_test_function');
+        $this->assertTrue($result['result']);
+    }
+
+    function testTypeByVariable() {
+        $type = Annotation::types(self::$fun);
+        $this->assertEquals($type, array('a' => 'string'));
+    }
+
+    function testCheckByVariable() {
+        $result = Annotation::check(self::$fun);
         $this->assertTrue($result['result']);
     }
 
