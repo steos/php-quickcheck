@@ -71,7 +71,7 @@ class FP {
     }
 
     static function range($min = 0, $max = -1) {
-        for ($i=0;$max<0||$i<$max;++$i) {
+        for ($i = $min; $max < 0 || $i < $max; ++$i) {
             yield $i;
         }
     }
