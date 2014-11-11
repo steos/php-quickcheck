@@ -32,6 +32,8 @@ class Annotation {
             return new \ReflectionMethod($f[0], $f[1]);
         } else if($f instanceof \Closure) {
             return new \ReflectionFunction($f);
+        } else if(is_object($f) && method_exists($f, '__invoke')) {
+            return new \ReflectionMethod($f, '__invoke');
         }
         throw new AnnotationException("Unable to determine callable type.");
     }

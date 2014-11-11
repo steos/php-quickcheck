@@ -10,6 +10,16 @@ function _annotation_test_function($a) {
     return is_string($a);
 }
 
+class _AnnotationInvokeTestClass {
+    /**
+     * @param string $a
+     * @return bool
+     */
+    public function __invoke($a) {
+        return is_string($a);
+    }
+}
+
 class _AnnotationTestClass {
     /**
      * @param string $a
@@ -143,6 +153,8 @@ class _AnnotationTestClass {
 
 class AnnotationTest extends \PHPUnit_Framework_TestCase {
     static $test = null;
+    static $fun = null;
+    static $invoke = null;
 
     static function setUpBeforeClass() {
         self::$test = new _AnnotationTestClass();
@@ -154,6 +166,8 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
         self::$fun = function($a) {
             return is_string($a);
         };
+
+        self::$invoke = new _AnnotationInvokeTestClass();
     }
 
     static function getNamespace() {
@@ -189,6 +203,16 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckByVariable() {
         $result = Annotation::check(self::$fun);
+        $this->assertTrue($result['result']);
+    }
+
+    function testTypeByInvoke() {
+        $type = Annotation::types(self::$invoke);
+        $this->assertEquals($type, array('a' => 'string'));
+    }
+
+    function testCheckByInvoke() {
+        $result = Annotation::check(self::$invoke);
         $this->assertTrue($result['result']);
     }
 
