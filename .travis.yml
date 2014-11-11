@@ -3,4 +3,4 @@ php:
     - 5.5
     - hhvm
 install: composer install
-script: ./vendor/bin/phpunit test/
+script: ./vendor/bin/phpunit --coverage-text test/
