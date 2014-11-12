@@ -319,7 +319,7 @@ class FP {
      */
     static function takeNth($n, $coll) {
         $coll = self::iterator($coll);
-        for ($coll->rewind(); $coll->valid(); $coll->next()) {
+        for ($coll->rewind(); $coll->valid(); $coll->valid() && $coll->next()) {
             yield $coll->current();
             for ($i = 0; $i < $n - 1 && $coll->valid(); ++$i) {
                 $coll->next();
