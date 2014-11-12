@@ -2,5 +2,6 @@ language: php
 php:
     - 5.5
     - hhvm
+before_script: phpenv config-add php.ini
 install: composer install
 script: ./vendor/bin/phpunit --coverage-text test/
