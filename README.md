@@ -1,5 +1,7 @@
 # PhpQuickCheck
 
+[![Build Status](https://travis-ci.org/steos/php-quickcheck.svg?branch=master)](https://travis-ci.org/steos/php-quickcheck)
+
 PhpQuickCheck is a generative testing library for PHP based on
 clojure.test.check.
 
