@@ -255,7 +255,7 @@ Requires PHP 5.5.x with 64 bit integers and gmp extension.
 
 ## License
 
-Copyright © 2014 Stefan Oestreicher.
+Copyright © 2014 Stefan Oestreicher and contributors.
 
 Distributed under the terms of the BSD (3-Clause) license.
 
