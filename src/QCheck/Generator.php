@@ -355,7 +355,7 @@ class Generator {
     }
 
     /**
-     * creates a generator that produces arrays with keys chosed from $keygen
+     * creates a generator that produces arrays with keys chosen from $keygen
      * and values chosen from $valgen.
      *
      * @param Generator $keygen
@@ -377,7 +377,7 @@ class Generator {
     }
 
     /**
-     * creates a generator that produces arrays with keys chosed from
+     * creates a generator that produces arrays with keys chosen from
      * this generator and values chosen from $valgen.
      *
      * @param Generator $valgen
@@ -533,7 +533,7 @@ class Generator {
 
     /**
      * creates a generator that produces values from specified generators based on
-     * likelihoods. The likelihood of a generator being chosed is its likelihood divided
+     * likelihoods. The likelihood of a generator being chosen is its likelihood divided
      * by the sum of all likelihoods.
      *
      * Example:
