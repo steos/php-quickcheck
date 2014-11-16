@@ -12,7 +12,7 @@ class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(is_integer($int));
     }
     function ints() {
-        return FP::take(50, Gen::tuples(Gen::ints())->samples());
+        return Gen::tuples(Gen::ints())->takeSamples();
     }
 
     /**
@@ -24,7 +24,7 @@ class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
         $this->assertContainsOnly('string', $list);
     }
     function lists() {
-        return FP::take(20, Gen::tuples(Gen::asciiStrings()->intoArrays())->samples());
+        return Gen::tuples(Gen::asciiStrings()->intoArrays())->takeSamples();
     }
 
     function testQuickCheckShrink() {
