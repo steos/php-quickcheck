@@ -6,6 +6,7 @@ class AnnotationException extends \Exception {}
 class MissingTypeAnnotationException extends AnnotationException {}
 class AmbiguousTypeAnnotationException extends AnnotationException {}
 class NoGeneratorAnnotationException extends AnnotationException {}
+class DuplicateGeneratorException extends AnnotationException {}
 
 /**
  * This class contains methods to determine the generator to use
@@ -14,6 +15,13 @@ class NoGeneratorAnnotationException extends AnnotationException {}
  * @package QCheck
  */
 class Annotation {
+    /**
+     * @var array types associated with generators
+     */
+    private static $generators = array(
+        'bool' => 'booleans',
+    );
+
     /**
      * Return the correct reflection class for the given callable.
      *
@@ -78,6 +86,21 @@ class Annotation {
     }
 
     /**
+     * Associate a generator to a given type.
+     *
+     * @param string $type
+     * @param Generator $generator Tĥe generator associated with the type
+     * @throws DuplicateGeneratorException
+     */
+    static function register($type, Generator $generator) {
+        if(array_key_exists($type, self::$generators)) {
+            throw new DuplicateGeneratorException("A generator is already registred for $type.");
+        }
+
+        self::$generators[$type] = $generator;
+    }
+
+    /**
      * Determine the generators needed to test the function $f and then
      * use the predicate $p to assert correctness.
      *
@@ -97,10 +120,6 @@ class Annotation {
 
         $types = self::types($f);
 
-        $generators = array(
-            'bool' => 'booleans',
-        );
-
         $args = array();
         foreach($types as $t) {
             $array = false;
@@ -109,19 +128,22 @@ class Annotation {
                 $array = true;
             }
 
-            if(array_key_exists($t, $generators)) {
-                $method = $generators[$t];
+            if(array_key_exists($t, self::$generators)) {
+                $generator = self::$generators[$t];
             } else if(method_exists('QCheck\Generator', $t.'s')) {
-                $method = $t.'s';
+                $generator = $t.'s';
             } else {
                 throw new NoGeneratorAnnotationException("Unable to find a generator for $t");
             }
-            $gen = call_user_func(array('QCheck\Generator', $method));
+
+            if(! $generator instanceof Generator) {
+                $generator = call_user_func(array('QCheck\Generator', $generator));
+            }
 
             if($array) {
-                $gen = $gen->intoArrays();
+                $generator = $generator->intoArrays();
             }
-            $args[] = $gen;
+            $args[] = $generator;
         }
 
         $check = function() use($f, $p) {

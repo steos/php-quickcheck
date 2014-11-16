@@ -20,6 +20,8 @@ class _AnnotationInvokeTestClass {
     }
 }
 
+class _TestClass { }
+
 class _AnnotationTestClass {
     /**
      * @param string $a
@@ -133,6 +135,14 @@ class _AnnotationTestClass {
             }
         }
         return true;
+    }
+
+    /**
+     * @param _TestClass $a
+     * @return bool
+     */
+    function custom_type(_TestClass $a) {
+        return is_object($a) && $a instanceof _TestClass;
     }
 
     /**
@@ -355,5 +365,27 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($array['result']);
         $this->assertTrue($string['result']);
         $this->assertTrue($object['result']);
+    }
+
+    function testRegister() {
+        $generator = Generator::any()->fmap(function() { return new _TestClass(); });
+        Annotation::register('_TestClass', $generator);
+
+        $array = Annotation::check(self::getArrayCallable('custom_type'), null, 1);
+        $string = Annotation::check(self::getStringCallable('custom_type'), null, 1);
+        $object = Annotation::check(self::getObjectCallable('custom_type'), null, 1);
+
+        $this->assertTrue($array['result']);
+        $this->assertTrue($string['result']);
+        $this->assertTrue($object['result']);
+    }
+
+    /**
+     * @expectedException QCheck\DuplicateGeneratorException
+     */
+    function testDuplicateRegister() {
+        $generator = Generator::any()->fmap(function() { return new _TestClass(); });
+        Annotation::register('_TestClass', $generator);
+        Annotation::register('_TestClass', $generator);
     }
 }
