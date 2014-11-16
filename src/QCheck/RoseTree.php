@@ -2,6 +2,12 @@
 
 namespace QCheck;
 
+/**
+ * A lazy monadic multi-way tree, used for shrinking.
+ * This implementation is based on clojure.test.check.rose-tree.
+ *
+ * @package QCheck
+ */
 class RoseTree {
     private $root;
     private $children;

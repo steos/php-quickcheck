@@ -6,6 +6,8 @@ namespace QCheck;
  * Iterator decorator that remembers all seen values
  * to allow rewind. Used for wrapping PHP generators
  * to make them rewindable.
+ *
+ * @package QCheck
  */
 class RewindableIterator implements \Iterator {
     private $gen;
