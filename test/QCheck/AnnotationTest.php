@@ -33,7 +33,6 @@ class _AnnotationTestClass {
      */
     function int($a) {}
 
-
     /**
      * @param array $a
      */
@@ -67,27 +66,27 @@ class _AnnotationTestClass {
      */
     static function static_method($a, $b, $c) {}
 
-    function nodoc($a) {}
+    static function nodoc($a) {}
 
     /**
      * @param $a
      */
-    function faultydoc($a) {}
+    static function faultydoc($a) {}
 
     /**
      * @param string $a
      */
-    function incompletedoc($a, $b) {}
+    static function incompletedoc($a, $b) {}
 
     /**
      * @param string|int $a
      */
-    function ambiguousdoc($a) {}
+    static function ambiguousdoc($a) {}
 
     /**
      * @param some_type $a
      */
-    function nogenerator($a) {}
+    static function nogenerator($a) {}
 
     /**
      * @param string $a
@@ -141,7 +140,7 @@ class _AnnotationTestClass {
      * @param _TestClass $a
      * @return bool
      */
-    function custom_type(_TestClass $a) {
+    static function custom_type(_TestClass $a) {
         return is_object($a) && $a instanceof _TestClass;
     }
 
@@ -226,6 +225,18 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($result['result']);
     }
 
+    function testStatic() {
+        $function = 'static_method';
+        $array = Annotation::types(self::getArrayCallable($function));
+        $string = Annotation::types(self::getStringCallable($function));
+        $object = Annotation::types(self::getObjectCallable($function));
+
+        $types = array('a' => 'string', 'b' => 'int', 'c' => 'array');
+        $this->assertEquals($array, $types);
+        $this->assertEquals($string, $types);
+        $this->assertEquals($object, $types);
+    }
+
     function getMethods() {
         return array(
             array('str', array('a' => 'string')),
@@ -242,12 +253,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider getMethods
      */
     function testType($function, $types) {
-        $array = Annotation::types(self::getArrayCallable($function));
-        $string = Annotation::types(self::getStringCallable($function));
         $object = Annotation::types(self::getObjectCallable($function));
-
-        $this->assertEquals($array, $types);
-        $this->assertEquals($string, $types);
         $this->assertEquals($object, $types);
     }
 
@@ -358,12 +364,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider getCheckMethods
      */
     function testCheck($function) {
-        $array = Annotation::check(self::getArrayCallable($function));
-        $string = Annotation::check(self::getStringCallable($function));
         $object = Annotation::check(self::getObjectCallable($function));
-
-        $this->assertTrue($array['result']);
-        $this->assertTrue($string['result']);
         $this->assertTrue($object['result']);
     }
 
