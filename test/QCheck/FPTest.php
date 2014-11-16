@@ -6,7 +6,7 @@ class FPTest extends \PHPUnit_Framework_TestCase {
     function testTakeNth() {
         $this->assertEquals(
             [0, 2, 4],
-            FP::realize(FP::takeNth(2, FP::Range(0, 5)))
+            FP::realize(FP::takeNth(2, FP::range(0, 5)))
         );
         $this->assertEquals(
             [0, 3, 6],
