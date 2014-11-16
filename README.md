@@ -14,6 +14,18 @@ Generative testing, also called property-based testing, is about
 describing the behaviour of your system in terms of properties that
 should hold true for all possible input.
 
+### Installation
+
+PhpQuickCheck is available via Packagist. Just add it to your composer.json:
+
+```
+{
+  "require": {
+    "steos/php-quickcheck": "dev-master"
+  }
+}
+```
+
 ### Examples
 
 Here is a failing example:
@@ -243,7 +255,7 @@ Requires PHP 5.5.x with 64 bit integers and gmp extension.
 
 ## License
 
-Copyright © 2014 Stefan Oestreicher.
+Copyright © 2014 Stefan Oestreicher and contributors.
 
 Distributed under the terms of the BSD (3-Clause) license.
 
