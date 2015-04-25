@@ -48,7 +48,7 @@ class Generator {
     /**
      * turns a list of generators into a generator of a list
      *
-     * @param Generator[] $ms
+     * @param Generator[]|\Iterator $ms
      * @return Generator
      */
     private static function sequence($ms) {
@@ -257,7 +257,7 @@ class Generator {
         $sized = self::sized(function($s) {
             return self::choose(0, $s);
         });
-        return $sized->bindGen(function($numRose) use ($gen) {
+        return $sized->bindGen(function(RoseTree $numRose) use ($gen) {
             $seq = self::sequence(FP::repeat($numRose->getRoot(), $gen));
             return $seq->bindGen(function($roses) {
                 return self::pureGen(RoseTree::shrink(FP::args(), $roses));
@@ -476,6 +476,7 @@ class Generator {
      *
      * @param callable $pred
      * @param int $maxTries
+     * @return Generator
      * @throws \RuntimeException
      */
     function suchThat(callable $pred, $maxTries = 10) {
