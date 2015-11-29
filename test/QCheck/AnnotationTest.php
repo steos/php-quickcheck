@@ -267,7 +267,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getFaultyMethods
-     * @expectedException QCheck\MissingTypeAnnotationException
+     * @expectedException QCheck\Exceptions\MissingTypeAnnotationException
      */
     function testNoTypeString($function) {
         Annotation::types(self::getStringCallable($function));
@@ -275,7 +275,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getFaultyMethods
-     * @expectedException QCheck\MissingTypeAnnotationException
+     * @expectedException QCheck\Exceptions\MissingTypeAnnotationException
      */
     function testNoTypeArray($function) {
         Annotation::types(self::getArrayCallable($function));
@@ -283,7 +283,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getFaultyMethods
-     * @expectedException QCheck\MissingTypeAnnotationException
+     * @expectedException QCheck\Exceptions\MissingTypeAnnotationException
      */
     function testNoTypeObject($function) {
         Annotation::types(self::getObjectCallable($function));
@@ -297,7 +297,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getAmbiguousMethods
-     * @expectedException QCheck\AmbiguousTypeAnnotationException
+     * @expectedException QCheck\Exceptions\AmbiguousTypeAnnotationException
      */
     function testAmbiguousTypeString($function) {
         Annotation::types(self::getStringCallable($function));
@@ -305,7 +305,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getAmbiguousMethods
-     * @expectedException QCheck\AmbiguousTypeAnnotationException
+     * @expectedException QCheck\Exceptions\AmbiguousTypeAnnotationException
      */
     function testAmbiguousTypeArray($function) {
         Annotation::types(self::getArrayCallable($function));
@@ -313,7 +313,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getAmbiguousMethods
-     * @expectedException QCheck\AmbiguousTypeAnnotationException
+     * @expectedException QCheck\Exceptions\AmbiguousTypeAnnotationException
      */
     function testAmbiguousTypeObject($function) {
         Annotation::types(self::getObjectCallable($function));
@@ -327,7 +327,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getNoGeneratorMethods
-     * @expectedException QCheck\NoGeneratorAnnotationException
+     * @expectedException QCheck\Exceptions\NoGeneratorAnnotationException
      */
     function testNoGeneratorTypeString($function) {
         Annotation::check(self::getStringCallable($function));
@@ -335,7 +335,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getNoGeneratorMethods
-     * @expectedException QCheck\NoGeneratorAnnotationException
+     * @expectedException QCheck\Exceptions\NoGeneratorAnnotationException
      */
     function testNoGeneratorTypeArray($function) {
         Annotation::check(self::getArrayCallable($function));
@@ -343,7 +343,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getNoGeneratorMethods
-     * @expectedException QCheck\NoGeneratorAnnotationException
+     * @expectedException QCheck\Exceptions\NoGeneratorAnnotationException
      */
     function testNoGeneratorTypeObject($function) {
         Annotation::check(self::getObjectCallable($function));
@@ -382,7 +382,7 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException QCheck\DuplicateGeneratorException
+     * @expectedException QCheck\Exceptions\DuplicateGeneratorException
      */
     function testDuplicateRegister() {
         $generator = Generator::any()->fmap(function() { return new _TestClass(); });

@@ -2,11 +2,11 @@
 
 namespace QCheck;
 
-class AnnotationException extends \Exception {}
-class MissingTypeAnnotationException extends AnnotationException {}
-class AmbiguousTypeAnnotationException extends AnnotationException {}
-class NoGeneratorAnnotationException extends AnnotationException {}
-class DuplicateGeneratorException extends AnnotationException {}
+use QCheck\Exceptions\AmbiguousTypeAnnotationException;
+use QCheck\Exceptions\AnnotationException;
+use QCheck\Exceptions\DuplicateGeneratorException;
+use QCheck\Exceptions\MissingTypeAnnotationException;
+use QCheck\Exceptions\NoGeneratorAnnotationException;
 
 /**
  * This class contains methods to determine the generator to use
