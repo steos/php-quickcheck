@@ -11,5 +11,8 @@
     },
     "autoload": {
         "psr-4": {"QCheck\\": "src/QCheck/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"QCheck\\": "test/QCheck/"}
     }
 }
