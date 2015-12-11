@@ -7,9 +7,12 @@
         "ext-gmp": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.2.*"
+        "phpunit/phpunit": "^4.8"
     },
     "autoload": {
         "psr-4": {"QCheck\\": "src/QCheck/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"QCheck\\": "test/QCheck/"}
     }
 }
