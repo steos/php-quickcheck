@@ -9,22 +9,28 @@ namespace QCheck;
  *
  * @package QCheck
  */
-class RewindableIterator implements \Iterator {
+class RewindableIterator implements \Iterator
+{
     private $gen;
     private $it;
-    function __construct(\Iterator $gen) {
+    public function __construct(\Iterator $gen)
+    {
         $this->gen = $gen;
     }
-    function key() {
+    public function key()
+    {
         return $this->it->key();
     }
-    function current() {
+    public function current()
+    {
         return $this->it->current();
     }
-    function valid() {
+    public function valid()
+    {
         return $this->it->valid();
     }
-    function next() {
+    public function next()
+    {
         $this->it->next();
         if ($this->gen->valid() && !$this->it->valid()) {
             $this->gen->next();
@@ -33,7 +39,8 @@ class RewindableIterator implements \Iterator {
             }
         }
     }
-    function rewind() {
+    public function rewind()
+    {
         if ($this->it === null) {
             $this->it = new \ArrayIterator();
             $this->gen->rewind();

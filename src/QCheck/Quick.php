@@ -4,9 +4,11 @@ namespace QCheck;
 
 use QCheck\Generator as Gen;
 
-class Quick {
+class Quick
+{
 
-    static function check($n, Gen $prop, array $opts = []) {
+    public static function check($n, Gen $prop, array $opts = [])
+    {
         $maxSize = @$opts['max_size'] ?: 200;
         $seed = @$opts['seed'] ?: intval(1000 * microtime(true));
         $rng = new Random($seed);
@@ -31,20 +33,23 @@ class Quick {
         return self::complete($prop, $n, $seed);
     }
 
-    static function complete(Gen $prop, $n, $seed) {
+    public static function complete(Gen $prop, $n, $seed)
+    {
         return ['result' => true,
                 'num_tests' => $n,
                 'seed' => $seed];
     }
 
-    static function smallestShrink($visited, $depth, $smallest) {
+    public static function smallestShrink($visited, $depth, $smallest)
+    {
         return ['nodes_visited' => $visited,
                 'depth' => $depth,
                 'result' => $smallest['result'],
                 'smallest' => $smallest['args']];
     }
 
-    static function failure(Gen $prop, RoseTree $tree, $n, $size, $seed) {
+    public static function failure(Gen $prop, RoseTree $tree, $n, $size, $seed)
+    {
         $root = $tree->getRoot();
         $result = $root['result'];
         $args = $root['args'];
@@ -57,7 +62,8 @@ class Quick {
                 'shrunk' => self::shrinkLoop($tree)];
     }
 
-    static function shrinkLoop(RoseTree $tree) {
+    public static function shrinkLoop(RoseTree $tree)
+    {
         $nodes = FP::realize($tree->getChildren());
         $smallest = $tree->getRoot();
         $visited = 0;

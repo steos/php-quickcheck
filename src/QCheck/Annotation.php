@@ -2,11 +2,11 @@
 
 namespace QCheck;
 
-class AnnotationException extends \Exception {}
-class MissingTypeAnnotationException extends AnnotationException {}
-class AmbiguousTypeAnnotationException extends AnnotationException {}
-class NoGeneratorAnnotationException extends AnnotationException {}
-class DuplicateGeneratorException extends AnnotationException {}
+use QCheck\Exceptions\AmbiguousTypeAnnotationException;
+use QCheck\Exceptions\AnnotationException;
+use QCheck\Exceptions\DuplicateGeneratorException;
+use QCheck\Exceptions\MissingTypeAnnotationException;
+use QCheck\Exceptions\NoGeneratorAnnotationException;
 
 /**
  * This class contains methods to determine the generator to use
@@ -14,7 +14,8 @@ class DuplicateGeneratorException extends AnnotationException {}
  *
  * @package QCheck
  */
-class Annotation {
+class Annotation
+{
     /**
      * @var array types associated with generators
      */
@@ -29,18 +30,19 @@ class Annotation {
      * @throws AnnotationException
      * @return \ReflectionFunction|\ReflectionMethod
      */
-    static function getReflection(callable $f) {
-        if(is_string($f)) {
-            if(strpos($f, '::', 1) !== false) {
+    public static function getReflection(callable $f)
+    {
+        if (is_string($f)) {
+            if (strpos($f, '::', 1) !== false) {
                 return new \ReflectionMethod($f);
             } else {
                 return new \ReflectionFunction($f);
             }
-        } else if(is_array($f) && count($f) == 2) {
+        } elseif (is_array($f) && count($f) == 2) {
             return new \ReflectionMethod($f[0], $f[1]);
-        } else if($f instanceof \Closure) {
+        } elseif ($f instanceof \Closure) {
             return new \ReflectionFunction($f);
-        } else if(is_object($f) && method_exists($f, '__invoke')) {
+        } elseif (is_object($f) && method_exists($f, '__invoke')) {
             return new \ReflectionMethod($f, '__invoke');
         }
         // if the tests above are exhaustive, we should never hit the next line.
@@ -54,7 +56,8 @@ class Annotation {
      * @throws AnnotationException
      * @return array
      */
-    static function types(callable $f) {
+    public static function types(callable $f)
+    {
         $ref = self::getReflection($f);
 
         $docs = $ref->getDocComment();
@@ -63,20 +66,20 @@ class Annotation {
         preg_match_all('/@param\s+(?P<type>.*?)\s+\$(?P<name>.*?)\s+/', $docs, $docs, PREG_SET_ORDER);
 
         $params = array();
-        foreach($proto as $p) {
+        foreach ($proto as $p) {
             $name = $p->getName();
             $type = null;
-            foreach($docs as $k => $d) {
-                if($d['name'] === $name) {
+            foreach ($docs as $k => $d) {
+                if ($d['name'] === $name) {
                     $type = $d['type'];
                     unset($docs[$k]);
                     break;
                 }
             }
-            if(is_null($type)) {
+            if (is_null($type)) {
                 throw new MissingTypeAnnotationException("Cannot determine type for $name.");
             }
-            if(count(explode('|', $type)) > 1) {
+            if (count(explode('|', $type)) > 1) {
                 throw new AmbiguousTypeAnnotationException("Ambiguous type for $name : $type");
             }
             $params[$name] = $type;
@@ -92,8 +95,9 @@ class Annotation {
      * @param Generator $generator Tĥe generator associated with the type
      * @throws DuplicateGeneratorException
      */
-    static function register($type, Generator $generator) {
-        if(array_key_exists($type, self::$generators)) {
+    public static function register($type, Generator $generator)
+    {
+        if (array_key_exists($type, self::$generators)) {
             throw new DuplicateGeneratorException("A generator is already registred for $type.");
         }
 
@@ -113,40 +117,44 @@ class Annotation {
      * @throws NoGeneratorAnnotationException
      * @return array
      */
-    static function check(callable $f, callable $p = null, $n = 10) {
-        if(is_null($p)) {
-            $p = function($result) { return $result === true; };
+    public static function check(callable $f, callable $p = null, $n = 10)
+    {
+        if (is_null($p)) {
+            $p = function ($result) {
+                return $result === true;
+
+            };
         }
 
         $types = self::types($f);
 
         $args = array();
-        foreach($types as $t) {
+        foreach ($types as $t) {
             $array = false;
-            if(substr($t, -2) == '[]') {
+            if (substr($t, -2) == '[]') {
                 $t = substr($t, 0, -2);
                 $array = true;
             }
 
-            if(array_key_exists($t, self::$generators)) {
+            if (array_key_exists($t, self::$generators)) {
                 $generator = self::$generators[$t];
-            } else if(method_exists('QCheck\Generator', $t.'s')) {
+            } elseif (method_exists('QCheck\Generator', $t.'s')) {
                 $generator = $t.'s';
             } else {
                 throw new NoGeneratorAnnotationException("Unable to find a generator for $t");
             }
 
-            if(! $generator instanceof Generator) {
+            if (! $generator instanceof Generator) {
                 $generator = call_user_func(array('QCheck\Generator', $generator));
             }
 
-            if($array) {
+            if ($array) {
                 $generator = $generator->intoArrays();
             }
             $args[] = $generator;
         }
 
-        $check = function() use($f, $p) {
+        $check = function () use ($f, $p) {
             $result = call_user_func_array($f, func_get_args());
             return $p($result);
         };

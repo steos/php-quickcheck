@@ -7,17 +7,19 @@ namespace QCheck;
  *
  * @package QCheck
  */
-class FP {
+class FP
+{
     /**
      * Return a callable with all the given arguments
      * already bound to the function (first parameter).
      *
      * @return callable
      */
-    static function partial() {
+    public static function partial()
+    {
         $args = func_get_args();
         $f = array_shift($args);
-        return function() use ($f, $args) {
+        return function () use ($f, $args) {
             return call_user_func_array($f, array_merge($args, func_get_args()));
         };
     }
@@ -32,7 +34,8 @@ class FP {
      * @return mixed|null
      * @throws \InvalidArgumentException
      */
-    static function reduce(callable $f, $xs, $initial = null) {
+    public static function reduce(callable $f, $xs, $initial = null)
+    {
         if (is_array($xs)) {
             $initial = $initial !== null ? $initial : array_shift($xs);
             return array_reduce($xs, $f, $initial);
@@ -62,8 +65,9 @@ class FP {
      * @param callable $g
      * @return callable
      */
-    static function comp(callable $f, callable $g) {
-        return function() use ($f, $g) {
+    public static function comp(callable $f, callable $g)
+    {
+        return function () use ($f, $g) {
             return call_user_func($f, call_user_func_array($g, func_get_args()));
         };
     }
@@ -76,7 +80,8 @@ class FP {
      * @param \Iterator $coll
      * @return \Generator
      */
-    static function map(callable $f, $coll) {
+    public static function map(callable $f, $coll)
+    {
         foreach ($coll as $x) {
             yield call_user_func($f, $x);
         }
@@ -90,7 +95,8 @@ class FP {
      * @param $coll
      * @return \Generator
      */
-    static function filter(callable $f, $coll) {
+    public static function filter(callable $f, $coll)
+    {
         foreach ($coll as $x) {
             if (call_user_func($f, $x)) {
                 yield $x;
@@ -104,7 +110,8 @@ class FP {
      * @param array|\Iterator $it
      * @return array
      */
-    static function realize($it) {
+    public static function realize($it)
+    {
         if ($it instanceof \Iterator) {
             return iterator_to_array($it);
         }
@@ -117,7 +124,8 @@ class FP {
      * @param callable $f
      * @return \Generator
      */
-    static function cycle(callable $f) {
+    public static function cycle(callable $f)
+    {
         while (true) {
             foreach ($f() as $x) {
                 yield $x;
@@ -133,7 +141,8 @@ class FP {
      * @param int $max
      * @return \Generator
      */
-    static function range($min = 0, $max = -1) {
+    public static function range($min = 0, $max = -1)
+    {
         for ($i = $min; $max < 0 || $i < $max; ++$i) {
             yield $i;
         }
@@ -147,7 +156,8 @@ class FP {
      * @param \Iterator $it
      * @return \Generator
      */
-    static function take($n, \Iterator $it) {
+    public static function take($n, \Iterator $it)
+    {
         for ($i = 0, $it->rewind(); $i < $n && $it->valid(); ++$i, $it->next()) {
             yield $it->current();
         }
@@ -159,7 +169,8 @@ class FP {
      *
      * @return \Generator
      */
-    static function concat() {
+    public static function concat()
+    {
         foreach (func_get_args() as $xs) {
             foreach ($xs as $x) {
                 yield $x;
@@ -174,7 +185,8 @@ class FP {
      * @param mixed $val
      * @return \Generator
      */
-    static function repeat($n, $val) {
+    public static function repeat($n, $val)
+    {
         for ($i = 0; $i < $n; ++$i) {
             yield $val;
         }
@@ -187,7 +199,8 @@ class FP {
      * @param \Generator $xs
      * @return RewindableIterator
      */
-    static function rgen(\Generator $xs) {
+    public static function rgen(\Generator $xs)
+    {
         return new RewindableIterator($xs);
     }
 
@@ -200,7 +213,8 @@ class FP {
      * @param $val
      * @return array
      */
-    static function assoc(array $arr, $k, $val) {
+    public static function assoc(array $arr, $k, $val)
+    {
         // we're relying on arr being passed as value
         $arr[$k] = $val;
         return $arr;
@@ -214,7 +228,8 @@ class FP {
      * @param array $xs
      * @return array
      */
-    static function excludeNth($n, array $xs) {
+    public static function excludeNth($n, array $xs)
+    {
         // we're relying on xs being passed as value
         array_splice($xs, $n, 1);
         return $xs;
@@ -227,8 +242,9 @@ class FP {
      * @param string $name
      * @return callable
      */
-    static function property($name) {
-        return function($obj) use ($name) {
+    public static function property($name)
+    {
+        return function ($obj) use ($name) {
             return $obj->$name;
         };
     }
@@ -240,13 +256,14 @@ class FP {
      * @return callable
      * @throws \InvalidArgumentException
      */
-    static function method() {
+    public static function method()
+    {
         $partialArgs = func_get_args();
         if (count($partialArgs) < 1) {
             throw new \InvalidArgumentException();
         }
         $name = array_shift($partialArgs);
-        return function() use ($name, $partialArgs) {
+        return function () use ($name, $partialArgs) {
             $args = func_get_args();
             if (count($args) < 1) {
                 throw new \InvalidArgumentException();
@@ -264,7 +281,8 @@ class FP {
      * @param $x
      * @return array
      */
-    static function push(array $xs, $x) {
+    public static function push(array $xs, $x)
+    {
         $xs[] = $x;
         return $xs;
     }
@@ -275,8 +293,9 @@ class FP {
      *
      * @return callable
      */
-    static function args() {
-        return function() {
+    public static function args()
+    {
+        return function () {
             return func_get_args();
         };
     }
@@ -287,7 +306,8 @@ class FP {
      * @param array $chars
      * @return string
      */
-    static function str(array $chars) {
+    public static function str(array $chars)
+    {
         return implode('', $chars);
     }
 
@@ -299,7 +319,8 @@ class FP {
      * @return \ArrayIterator
      * @throws \InvalidArgumentException
      */
-    static function iterator($xs) {
+    public static function iterator($xs)
+    {
         if (is_array($xs)) {
             return new \ArrayIterator($xs);
         }
@@ -317,7 +338,8 @@ class FP {
      * @param $coll
      * @return \Generator
      */
-    static function takeNth($n, $coll) {
+    public static function takeNth($n, $coll)
+    {
         $coll = self::iterator($coll);
         for ($coll->rewind(); $coll->valid(); $coll->valid() && $coll->next()) {
             yield $coll->current();
@@ -335,7 +357,8 @@ class FP {
      * @param $coll
      * @return \Generator
      */
-    static function partition($n, $coll) {
+    public static function partition($n, $coll)
+    {
         $coll = self::iterator($coll);
         for ($coll->rewind(); $coll->valid();) {
             $partition = [];
