@@ -5,4 +5,3 @@ php:
     - 7.0
     - hhvm
 install: composer install
-script: ./vendor/bin/phpunit -d xdebug.max_nesting_level=0 --coverage-text test/
