@@ -564,7 +564,7 @@ class Generator
     public static function posInts()
     {
         return self::ints()->fmap(function ($x) {
-            return abs($x);
+            return abs($x)+1; // produce 1 for 0 etc
         });
     }
 
@@ -575,6 +575,32 @@ class Generator
      * @return Generator
      */
     public static function negInts()
+    {
+        return self::ints()->fmap(function ($x) {
+            return -abs($x)-1; // produce -1 for 0 etc.
+        });
+    }
+
+    /**
+     * creates a generator that produces non-negative integers bounded by
+     * the generators size parameter.
+     *
+     * @return Generator
+     */
+    public static function nonNegInts()
+    {
+        return self::ints()->fmap(function ($x) {
+            return abs($x);
+        });
+    }
+
+    /**
+     * creates a generator that produces non-positive integers bounded by
+     * the generators size parameter.
+     *
+     * @return Generator
+     */
+    public static function nonPosInts()
     {
         return self::ints()->fmap(function ($x) {
             return -abs($x);
