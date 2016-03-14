@@ -582,6 +582,32 @@ class Generator
     }
 
     /**
+     * creates a generator that produces strictly positive integers bounded by
+     * the generators size parameter.
+     *
+     * @return Generator
+     */
+    public static function strictlyPosInts()
+    {
+        return self::ints()->fmap(function ($x) {
+            return abs($x)+1;
+        });
+    }
+
+    /**
+     * creates a generator that produces strictly negative integers bounded by
+     * the generators size parameter.
+     *
+     * @return Generator
+     */
+    public static function strictlyNegInts()
+    {
+        return self::ints()->fmap(function ($x) {
+            return -abs($x)-1;
+        });
+    }
+
+    /**
      * creates a generator that produces values from specified generators based on
      * likelihoods. The likelihood of a generator being chosen is its likelihood divided
      * by the sum of all likelihoods.
