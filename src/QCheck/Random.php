@@ -38,21 +38,9 @@ class Random
     {
         $this->seed = self::mask($seed ^ self::MULTIPLIER);
     }
-
-    protected function ival($i) {
-      if (function_exists('gmp_intval')) return gmp_val($i);
-      return intval($i);
-    }
-
-    protected function imul($a, $b) {
-      if (function_exists('gmp_mul')) return gmp_mul($a, $b);
-      return $a * $b;
-    }
-
-
     protected function next($bits)
     {
-        $temp = self::ival(self::imul($this->seed, self::MULTIPLIER));
+        $temp = gmp_intval(gmp_mul($this->seed, self::MULTIPLIER));
         $this->seed = self::mask($temp + self::ADDEND);
         return self::i32(self::rshiftu($this->seed, (48 - $bits)));
     }
