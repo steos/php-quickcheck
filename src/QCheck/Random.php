@@ -41,7 +41,9 @@ class Random
     }
     protected function next($bits)
     {
-        $temp = self::general_intval(self::general_int_mul($this->seed, self::MULTIPLIER));
+        $temp = function_exists('gmp_mul') ?
+            gmp_intval(gmp_mul($this->seed, self::MULTIPLIER)) :
+            self::int_mul($this->seed, self::MULTIPLIER);
         $this->seed = self::mask($temp + self::ADDEND);
 
         return self::i32(self::rshiftu($this->seed, (48 - $bits)));
@@ -56,20 +58,9 @@ class Random
         return $this->next(32);
     }
 
-    public function general_int_mul($a, $b) {
-      if (function_exists("gmp_mul")) return gmp_mul($a, $b);
-      return self::int_mul($a, $b);
-    }
-
-    public function general_intval($a) {
-      if (function_exists("gmp_intval")) return gmp_intval($a);
-      return intval($a);
-    }
-
-    // multiplication with only shifts and ands
     // does Java/C/Go-like overflow
     // http://stackoverflow.com/questions/4456442/multiplication-of-two-integers-using-bitwise-operators
-    public function int_mul($a, $b)
+    public static function int_mul($a, $b)
     {
         $result = 0;
         while ($b != 0) {
@@ -86,7 +77,7 @@ class Random
     }
 
     // addition with only shifts and ands
-    public function int_add($x, $y)
+    public static function int_add($x, $y)
     {
         if ($y == 0) {
             return $x;
