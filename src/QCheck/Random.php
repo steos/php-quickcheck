@@ -21,6 +21,7 @@ class Random
         if ($b == 0) {
             return $a;
         }
+
         return ($a >> $b) & ~(1 << 63 >> ($b - 1));
     }
     public static function mask($val)
@@ -40,17 +41,48 @@ class Random
     }
     protected function next($bits)
     {
-        $temp = gmp_intval(gmp_mul($this->seed, self::MULTIPLIER));
+        $temp = function_exists('gmp_mul') ?
+            gmp_intval(gmp_mul($this->seed, self::MULTIPLIER)) :
+            self::int_mul($this->seed, self::MULTIPLIER);
         $this->seed = self::mask($temp + self::ADDEND);
+
         return self::i32(self::rshiftu($this->seed, (48 - $bits)));
     }
     public function nextDouble()
     {
         return (($this->next(26) << 27) + $this->next(27))
-            / (double)(1 << 53);
+            / (double) (1 << 53);
     }
     public function nextInt()
     {
         return $this->next(32);
+    }
+
+    // does Java/C/Go-like overflow
+    // http://stackoverflow.com/questions/4456442/multiplication-of-two-integers-using-bitwise-operators
+    public static function int_mul($a, $b)
+    {
+        $result = 0;
+        while ($b != 0) {
+            // Iterate the loop till b==0
+        if ($b & 01) {                // is $b odd?
+          $result = self::int_add($result, $a); // int_add result
+        }
+            $a <<= 1;               // Left shifting the value contained in 'a' by 1
+                                    // multiplies a by 2 for each loop
+        $b >>= 1;                   // Right shifting the value contained in 'b' by 1.
+        }
+
+        return $result;
+    }
+
+    // addition with only shifts and ands
+    public static function int_add($x, $y)
+    {
+        if ($y == 0) {
+            return $x;
+        } else {
+            return self::int_add($x ^ $y, ($x & $y) << 1);
+        }
     }
 }
