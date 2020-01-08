@@ -193,18 +193,6 @@ class FP
     }
 
     /**
-     * Return an Iterator allowing a rewind on the
-     * given generator.
-     *
-     * @param \Generator $xs
-     * @return RewindableIterator
-     */
-    public static function rgen(\Generator $xs)
-    {
-        return new RewindableIterator($xs);
-    }
-
-    /**
      * Return a copy of the given array where the value
      * at index $k has been changed to $val.
      *

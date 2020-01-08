@@ -176,7 +176,9 @@ class Generator
     public static function intRoseTree($val)
     {
         $me = [__CLASS__, 'intRoseTree'];
-        return new RoseTree($val, FP::map($me, self::shrinkInt($val)));
+        return new RoseTree($val, function() use ($me, $val) {
+            return FP::map($me, self::shrinkInt($val));
+        });
     }
 
     private static function sized(callable $sizedGen)
