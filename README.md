@@ -6,6 +6,7 @@ PhpQuickCheck is a generative testing library for PHP based on
 clojure.test.check.
 
 > Don't write tests. Generate them.
+>
 > - John Hughes
 
 ## Huh?
@@ -102,6 +103,7 @@ var_dump(Quick::check(100, $brokenSort, ['echo' => true]));
 ```
 
 This will result in output similar to:
+
 ```
 ......F
 {
@@ -277,7 +279,6 @@ Requires PHP 5.5.x with 64 bit integers and gmp extension.
 
 ## License
 
-Copyright © 2014 Stefan Oestreicher and contributors.
+Copyright © 2020, Stefan Oestreicher and contributors.
 
 Distributed under the terms of the BSD (3-Clause) license.
-
