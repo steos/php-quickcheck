@@ -29,21 +29,21 @@ class Generator
         return call_user_func($this->gen, $rng, $size);
     }
 
-    private static function pureGen($value)
+    public static function pureGen($value)
     {
         return new self(function ($rng, $size) use ($value) {
             return $value;
         });
     }
 
-    private function fmapGen(callable $k)
+    public function fmapGen(callable $k)
     {
         return new self(function ($rng, $size) use ($k) {
             return call_user_func($k, call_user_func($this->gen, $rng, $size));
         });
     }
 
-    private function bindGen(callable $k)
+    public function bindGen(callable $k)
     {
         return new self(function ($rng, $size) use ($k) {
             $f = call_user_func($k, $this->call($rng, $size));
@@ -352,6 +352,18 @@ class Generator
         )->fmap('chr');
     }
 
+    public function dontShrink() {
+        return $this->bindGen(function(RoseTree $x) {
+            return self::unit($x->getRoot());
+        });
+    }
+
+    public function toStrings() {
+        return $this->fmap(function($x) {
+            return is_array($x) ? implode('', $x) : (string)$x;
+        });
+    }
+
     /**
      * creates a generator that produces strings; may contain unprintable chars
      *
@@ -359,7 +371,7 @@ class Generator
      */
     public static function strings()
     {
-        return self::chars()->intoArrays()->fmap('QCheck\FP::str');
+        return self::chars()->intoArrays()->toStrings();
     }
 
     /**
@@ -369,7 +381,7 @@ class Generator
      */
     public static function asciiStrings()
     {
-        return self::asciiChars()->intoArrays()->fmap('QCheck\FP::str');
+        return self::asciiChars()->intoArrays()->toStrings();
     }
 
     /**
@@ -379,7 +391,7 @@ class Generator
      */
     public static function alphaNumStrings()
     {
-        return self::alphaNumChars()->intoArrays()->fmap('QCheck\FP::str');
+        return self::alphaNumChars()->intoArrays()->toStrings();
     }
 
     /**
