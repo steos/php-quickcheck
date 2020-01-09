@@ -1,11 +1,10 @@
 <?php
 
-namespace QuickCheck\PHPUnit\Constraint;
+namespace QuickCheck\PHPUnit;
 
 use PHPUnit\Framework\Constraint\Constraint;
-use QuickCheck\Quick;
 
-class Prop extends Constraint
+class PropertyConstraint extends Constraint
 {
     /**
      * @var int
@@ -30,7 +29,7 @@ class Prop extends Constraint
 
     public function evaluate($prop, string $description = '', bool $returnResult = false)
     {
-        $result = Quick::check($this->size, $prop, $this->opts);
+        $result = $prop->check($this->size, $this->opts);
         return parent::evaluate($result, $description, $returnResult);
     }
 

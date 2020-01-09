@@ -4,16 +4,16 @@ Here is a failing example:
 
 ```php
 use QuickCheck\Generator as Gen;
-use QuickCheck\Quick;
+use QuickCheck\Property;
 
-$stringsAreNeverNumeric = Gen::forAll(
+$stringsAreNeverNumeric = Property::forAll(
     [Gen::asciiStrings()],
     function($str) {
         return !is_numeric($str);
     }
 );
 
-$result = Quick::check(1000, $stringsAreNeverNumeric);
+$result = $stringsAreNeverNumeric->check(1000);
 var_dump($result);
 ```
 
@@ -62,14 +62,14 @@ function myBrokenSort(array $xs) {
 }
 
 // so let's test our sort function, it should work on all possible int arrays
-$brokenSort = Gen::forAll(
+$brokenSort = Property::forAll(
     [Gen::ints()->intoArrays()],
     function(array $xs) {
         return isAscending(myBrokenSort($xs));
     }
 );
 
-var_dump(Quick::check(100, $brokenSort, ['echo' => true]));
+var_dump($brokenSort->check(100, ['echo' => true]));
 
 ```
 
@@ -104,7 +104,7 @@ The result also contains the seed so you can run the exact same test by passing 
 to the check function:
 
 ```php
-var_dump(Quick::check(100, $brokenSort, ['seed' => 1411398418957]));
+var_dump($brokenSort->check(100, ['seed' => 1411398418957]));
 ```
 
 This always fails with the array `[-3,6,5,-5,1]` after 7 tests and shrinks to `[1,0]`.

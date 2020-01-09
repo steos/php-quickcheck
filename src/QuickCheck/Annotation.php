@@ -159,8 +159,6 @@ class Annotation
             return $p($result);
         };
 
-        $prop = Generator::forAll($args, $check);
-
-        return Quick::check($n, $prop);
+        return Property::forAll($args, $check)->check($n);
     }
 }

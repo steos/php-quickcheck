@@ -4,10 +4,30 @@ namespace QuickCheck;
 
 use QuickCheck\Generator as Gen;
 
-class Quick
+class Property
 {
+    /** @var Generator */
+    private $generator;
 
-    public static function check($n, Gen $prop, array $opts = [])
+    private function __construct(Gen $generator)
+    {
+        $this->generator = $generator;
+    }
+
+    public static function forAll(array $args, callable $f)
+    {
+        return new self(Gen::tuples($args)->fmap(function ($args) use ($f) {
+            try {
+                $result = call_user_func_array($f, $args);
+            } catch (\Exception $e) {
+                $result = $e;
+            }
+            return ['result' => $result,
+                'function' => $f,
+                'args' => $args];
+        }));
+    }
+    public function check($n, array $opts = [])
     {
         $maxSize = @$opts['max_size'] ?: 200;
         $seed = @$opts['seed'] ?: intval(1000 * microtime(true));
@@ -15,7 +35,7 @@ class Quick
         $sizes = Gen::sizes($maxSize);
         for ($i = 0, $sizes->rewind(); $i < $n; ++$i, $sizes->next()) {
             $size = $sizes->current();
-            $resultMapRose = $prop->call($rng, $size);
+            $resultMapRose = $this->generator->call($rng, $size);
             $resultMap = $resultMapRose->getRoot();
             $result = $resultMap['result'];
             $args = $resultMap['args'];
@@ -23,21 +43,16 @@ class Quick
                 if (@$opts['echo']) {
                     echo 'F', PHP_EOL;
                 }
-                return self::failure($prop, $resultMapRose, $i, $size, $seed);
+                return self::failure($resultMapRose, $i, $size, $seed);
             }
             if (@$opts['echo']) {
                 echo '.';
             }
             // TODO: trial reporting
         }
-        return self::complete($prop, $n, $seed);
-    }
-
-    public static function complete(Gen $prop, $n, $seed)
-    {
         return ['result' => true,
-                'num_tests' => $n,
-                'seed' => $seed];
+            'num_tests' => $n,
+            'seed' => $seed];
     }
 
     public static function smallestShrink($visited, $depth, $smallest)
@@ -48,7 +63,7 @@ class Quick
                 'smallest' => $smallest['args']];
     }
 
-    public static function failure(Gen $prop, ShrinkTree $tree, $n, $size, $seed)
+    public static function failure(ShrinkTree $tree, $n, $size, $seed)
     {
         $root = $tree->getRoot();
         $result = $root['result'];

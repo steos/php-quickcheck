@@ -4,7 +4,7 @@ namespace QuickCheck;
 
 use PHPUnit\Framework\TestCase;
 
-class FPTest extends TestCase {
+class LazyTest extends TestCase {
     function testTakeNth() {
         $this->assertEquals(
             [0, 2, 4],

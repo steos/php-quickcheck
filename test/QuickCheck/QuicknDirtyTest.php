@@ -2,8 +2,10 @@
 
 namespace QuickCheck;
 
+use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
 use QuickCheck\Generator as Gen;
+use QuickCheck\PHPUnit\PropertyConstraint;
 
 class QuicknDirtyTest extends TestCase {
     /**
@@ -29,13 +31,19 @@ class QuicknDirtyTest extends TestCase {
     }
 
     function testQuickCheckShrink() {
-        $prop = Gen::forAll([Gen::asciiStrings()], function($s) {
+        $result = Property::forAll([Gen::asciiStrings()], function($s) {
             return !is_numeric($s);
-        });
-        $result = Quick::check(10000, $prop);
+        })->check(10000);
         $this->assertFalse($result['result']);
         $smallest = $result['shrunk']['smallest'][0];
         $this->assertEquals('0', $smallest,
             "expected smallest to be '0' but got '$smallest'");
+    }
+
+    function testPropConstraintFailure() {
+        $this->expectException(AssertionFailedError::class);
+        $this->assertThat(Property::forAll([Gen::strings()], function($str) {
+            return strlen($str) < 10;
+        }), PropertyConstraint::check(100));
     }
 }

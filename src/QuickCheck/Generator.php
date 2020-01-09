@@ -737,19 +737,4 @@ class Generator
             self::simplePrintableTypes()
         );
     }
-
-    public static function forAll(array $args, callable $f)
-    {
-        $tuples = call_user_func_array([__CLASS__, 'tuples'], $args);
-        return $tuples->fmap(function ($args) use ($f) {
-            try {
-                $result = call_user_func_array($f, $args);
-            } catch (\Exception $e) {
-                $result = $e;
-            }
-            return ['result' => $result,
-                    'function' => $f,
-                    'args' => $args];
-        });
-    }
 }
