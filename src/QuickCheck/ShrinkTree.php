@@ -8,7 +8,7 @@ namespace QuickCheck;
  *
  * @package QuickCheck
  */
-class RoseTree
+class ShrinkTree
 {
     private $root;
     private $children;
@@ -38,7 +38,7 @@ class RoseTree
     {
         return new self(
             call_user_func($f, $this->root),
-            function() use ($f) { return FP::map(FP::method('fmap', $f), $this->getChildren()); }
+            function() use ($f) { return Lazy::map(Functions::method('fmap', $f), $this->getChildren()); }
         );
     }
 
@@ -46,8 +46,8 @@ class RoseTree
     {
         $innerRoot = $this->root->getRoot();
         return new self($innerRoot, function() {
-            return FP::concat(
-                FP::map(FP::method('join'), $this->getChildren()),
+            return Lazy::concat(
+                Lazy::map(Functions::method('join'), $this->getChildren()),
                 $this->root->getChildren()
             );
         });
@@ -63,11 +63,11 @@ class RoseTree
         return new self(
             $this->root,
             function() use ($pred) {
-                return FP::map(
+                return Lazy::map(
                     function (self $child) use ($pred) {
                         return $child->filter($pred);
                     },
-                    FP::filter(
+                    Lazy::filter(
                         function (self $child) use ($pred) {
                             return call_user_func($pred, $child->getRoot());
                         },
@@ -82,7 +82,7 @@ class RoseTree
     {
         foreach ($roses as $index => $rose) {
             foreach ($rose->getChildren() as $child) {
-                yield FP::assoc($roses, $index, $child);
+                yield Arrays::assoc($roses, $index, $child);
             }
         }
     }
@@ -92,15 +92,12 @@ class RoseTree
         return new self(
             call_user_func_array(
                 $f,
-                FP::realize(FP::map(FP::method('getRoot'), $roses))
+                Lazy::realize(Lazy::map(Functions::method('getRoot'), $roses))
             ),
             function() use ($f, $roses) {
-                return FP::map(
-                    FP::partial(
-                        [__CLASS__,
-                        'zip'],
-                        $f
-                    ),
+                return Lazy::map(function($xs) use ($f) {
+                        return self::zip($f, $xs);
+                    },
                     self::permutations($roses)
                 );
             }
@@ -109,9 +106,9 @@ class RoseTree
 
     private static function remove(array $roses)
     {
-        return FP::concat(
-            FP::map(function ($index) use ($roses) {
-                return FP::excludeNth($index, $roses);
+        return Lazy::concat(
+            Lazy::map(function ($index) use ($roses) {
+                return Arrays::excludeNth($index, $roses);
             }, array_keys($roses)),
             self::permutations($roses)
         );
@@ -119,22 +116,19 @@ class RoseTree
 
     public static function shrink(callable $f, $roses)
     {
-        $roses = FP::realize($roses);
+        $roses = Lazy::realize($roses);
         if (empty($roses)) {
             return self::pure(call_user_func($f));
         } else {
             return new self(
                 call_user_func_array(
                     $f,
-                    FP::realize(FP::map(FP::method('getRoot'), $roses))
+                    Lazy::realize(Lazy::map(Functions::method('getRoot'), $roses))
                 ),
                 function() use ($f, $roses) {
-                    return FP::map(
-                        FP::partial(
-                            [__CLASS__,
-                            'shrink'],
-                            $f
-                        ),
+                    return Lazy::map(function($x) use($f) {
+                            return self::shrink($f, $x);
+                        },
                         self::remove($roses)
                     );
                 }

@@ -48,7 +48,7 @@ class Quick
                 'smallest' => $smallest['args']];
     }
 
-    public static function failure(Gen $prop, RoseTree $tree, $n, $size, $seed)
+    public static function failure(Gen $prop, ShrinkTree $tree, $n, $size, $seed)
     {
         $root = $tree->getRoot();
         $result = $root['result'];
@@ -62,9 +62,9 @@ class Quick
                 'shrunk' => self::shrinkLoop($tree)];
     }
 
-    public static function shrinkLoop(RoseTree $tree)
+    public static function shrinkLoop(ShrinkTree $tree)
     {
-        $nodes = FP::realize($tree->getChildren());
+        $nodes = Lazy::realize($tree->getChildren());
         $smallest = $tree->getRoot();
         $visited = 0;
         $depth = 0;
@@ -73,7 +73,7 @@ class Quick
             $root = $head->getRoot();
             $result = $root['result'];
             if (!$result || $result instanceof \Exception) {
-                $children = FP::realize($head->getChildren());
+                $children = Lazy::realize($head->getChildren());
                 if (empty($children)) {
                     $smallest = $root;
                     $visited++;

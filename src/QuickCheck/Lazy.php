@@ -3,27 +3,12 @@
 namespace QuickCheck;
 
 /**
- * Helper for a functional programming style.
+ * Utilities for working with lazy sequences
  *
  * @package QuickCheck
  */
-class FP
+class Lazy
 {
-    /**
-     * Return a callable with all the given arguments
-     * already bound to the function (first parameter).
-     *
-     * @return callable
-     */
-    public static function partial()
-    {
-        $args = func_get_args();
-        $f = array_shift($args);
-        return function () use ($f, $args) {
-            return call_user_func_array($f, array_merge($args, func_get_args()));
-        };
-    }
-
     /**
      * Reduce any iterable collection using the callback. In case
      * of an array, array_reduce is used.
@@ -59,25 +44,11 @@ class FP
     }
 
     /**
-     * Compose the two functions
-     *
-     * @param callable $f
-     * @param callable $g
-     * @return callable
-     */
-    public static function comp(callable $f, callable $g)
-    {
-        return function () use ($f, $g) {
-            return call_user_func($f, call_user_func_array($g, func_get_args()));
-        };
-    }
-
-    /**
-     * Map a function to an iterable collection in a lazy way
+     * Maps a function over an iterable collection in a lazy way
      * using generators
      *
      * @param callable $f
-     * @param \Iterator $coll
+     * @param \Iterable $coll
      * @return \Generator
      */
     public static function map(callable $f, $coll)
@@ -193,118 +164,11 @@ class FP
     }
 
     /**
-     * Return a copy of the given array where the value
-     * at index $k has been changed to $val.
-     *
-     * @param array $arr
-     * @param $k
-     * @param $val
-     * @return array
-     */
-    public static function assoc(array $arr, $k, $val)
-    {
-        // we're relying on arr being passed as value
-        $arr[$k] = $val;
-        return $arr;
-    }
-
-    /**
-     * Return a copy of the array with the Nth element
-     * removed.
-     *
-     * @param int $n
-     * @param array $xs
-     * @return array
-     */
-    public static function excludeNth($n, array $xs)
-    {
-        // we're relying on xs being passed as value
-        array_splice($xs, $n, 1);
-        return $xs;
-    }
-
-    /**
-     * Return a function that returns the given property
-     * on any given object.
-     *
-     * @param string $name
-     * @return callable
-     */
-    public static function property($name)
-    {
-        return function ($obj) use ($name) {
-            return $obj->$name;
-        };
-    }
-
-    /**
-     * Return a function that calls the given method (first parameter)
-     * on any given object with the given arguments (remaining parameters).
-     *
-     * @return callable
-     * @throws \InvalidArgumentException
-     */
-    public static function method()
-    {
-        $partialArgs = func_get_args();
-        if (count($partialArgs) < 1) {
-            throw new \InvalidArgumentException();
-        }
-        $name = array_shift($partialArgs);
-        return function () use ($name, $partialArgs) {
-            $args = func_get_args();
-            if (count($args) < 1) {
-                throw new \InvalidArgumentException();
-            }
-            $obj = array_shift($args);
-            return call_user_func_array([&$obj, $name], array_merge($partialArgs, $args));
-        };
-    }
-
-    /**
-     * Return a copy of the given array with the given value
-     * added at the end.
-     *
-     * @param array $xs
-     * @param $x
-     * @return array
-     */
-    public static function push(array $xs, $x)
-    {
-        $xs[] = $x;
-        return $xs;
-    }
-
-    /**
-     * Returns a function that simply return that arguments
-     * it receives.
-     *
-     * @return callable
-     */
-    public static function args()
-    {
-        return function () {
-            return func_get_args();
-        };
-    }
-
-    /**
-     * Create a string with the given char array.
-     *
-     * @param array $chars
-     * @return string
-     */
-    public static function str(array $chars)
-    {
-        return implode('', $chars);
-    }
-
-    /**
      * Return an iterator for the given collection if
      * possible.
      *
      * @param $xs
-     * @return \ArrayIterator
+     * @return \Iterator
      * @throws \InvalidArgumentException
      */
     public static function iterator($xs)
