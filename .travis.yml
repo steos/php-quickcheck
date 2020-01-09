@@ -5,3 +5,5 @@ php:
   - 7.3
   - 7.4
 install: composer install
+before_script:
+  - phpenv config-rm xdebug.ini

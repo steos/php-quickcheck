@@ -32,7 +32,7 @@ class QuicknDirtyTest extends TestCase {
         $prop = Gen::forAll([Gen::asciiStrings()], function($s) {
             return !is_numeric($s);
         });
-        $result = Quick::check(1000, $prop);
+        $result = Quick::check(10000, $prop);
         $this->assertFalse($result['result']);
         $smallest = $result['shrunk']['smallest'][0];
         $this->assertEquals('0', $smallest,
