@@ -64,14 +64,10 @@ This will produce something like the following output (json encoded for readabil
 
 ### Installation
 
-PhpQuickCheck is available via Packagist. Just add it to your composer.json:
+PhpQuickCheck is available via Packagist. Just require it:
 
 ```
-{
-  "require": {
-    "steos/php-quickcheck": "dev-master"
-  }
-}
+$ composer require steos/php-quickcheck
 ```
 
 ### xdebug
