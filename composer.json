@@ -1,5 +1,5 @@
 {
-    "name": "steos/php-quickcheck",
+    "name": "steos/quickcheck",
     "description": "a generative testing library",
     "license": "BSD-3-Clause",
     "require": {

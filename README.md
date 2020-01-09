@@ -1,8 +1,8 @@
-# PhpQuickCheck
+# PHPQuickCheck
 
 [![Build Status](https://travis-ci.org/steos/php-quickcheck.svg?branch=master)](https://travis-ci.org/steos/php-quickcheck)
 
-PhpQuickCheck is a generative testing library for PHP based on
+PHPQuickCheck is a generative testing library for PHP based on
 clojure.test.check.
 
 > Don't write tests. Generate them. - John Hughes
@@ -64,15 +64,16 @@ This will produce something like the following output (json encoded for readabil
 
 ### Installation
 
-PhpQuickCheck is available via Packagist. Just require it:
+PHPQuickCheck is available via Packagist so you can require it with composer:
 
 ```
-$ composer require steos/php-quickcheck
+$ composer require steos/quickcheck
 ```
 
 ### xdebug
 
-PhpQuickCheck uses a lot of functional programming techniques which leads to a lot of nested functions. With xdebug default settings it can quickly lead to this error:
+PHPQuickCheck uses a lot of functional programming techniques which leads to a lot of nested functions.
+With xdebug default settings it can quickly lead to this error:
 
 ```
 Error: Maximum function nesting level of '256' reached, aborting!
@@ -90,7 +91,7 @@ The phpunit config sets it to `9999`.
 
 ## Project Status
 
-PhpQuickCheck is somewhat experimental. The core functionality of clojure.test.check (as of March 2016) has been implemented.
+PHPQuickCheck is somewhat experimental. The core functionality of clojure.test.check (as of March 2016) has been implemented.
 
 ### Contributing
 
