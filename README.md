@@ -5,9 +5,7 @@
 PhpQuickCheck is a generative testing library for PHP based on
 clojure.test.check.
 
-> Don't write tests. Generate them.
->
-> - John Hughes
+> Don't write tests. Generate them. - John Hughes
 
 ## Huh?
 
@@ -15,21 +13,7 @@ Generative testing, also called property-based testing, is about
 describing the behaviour of your system in terms of properties that
 should hold true for all possible input.
 
-### Installation
-
-PhpQuickCheck is available via Packagist. Just add it to your composer.json:
-
-```
-{
-  "require": {
-    "steos/php-quickcheck": "dev-master"
-  }
-}
-```
-
-### Examples
-
-Here is a failing example:
+### Example
 
 ```php
 use QCheck\Generator as Gen;
@@ -66,233 +50,55 @@ This will produce something like the following output (json encoded for readabil
 }
 ```
 
-What this tells us that after 110 random tests the property was sucessfully falsified.
-The exact argument that caused the failure was "727" which then got shrunk to "0".
-So our minimal failing case is the string "0".
+### Documentation
 
-Here's another example:
+- [Introduction](doc/introduction.md)
+- [PHPUnit Support](doc/phpunit.md)
+- [Using Annotations](doc/annotations.md)
+- [Generator Examples](doc/generators.md)
 
-```php
-// predicate function that checks if the given
-// array elements are in ascending order
-function isAscending(array $xs) {
-    $last = count($xs) - 1;
-    for ($i = 0; $i < $last; ++$i) {
-        if ($xs[$i] > $xs[$i + 1]) {
-            return false;
-        }
-    }
-    return true;
-}
+#### Other Resources
 
-// sort function that is obviously broken
-function myBrokenSort(array $xs) {
-    return $xs;
-}
+- [A QuickCheck Primer for PHP Developers](https://medium.com/@thinkfunctional/a-quickcheck-primer-for-php-developers-5ffbe20c16c8)
+- [Testing the hard stuff and staying sane (John Hughes)](https://www.youtube.com/watch?v=zi0rHwfiX1Q)
 
-// so let's test our sort function, it should work on all possible int arrays
-$brokenSort = Gen::forAll(
-    [Gen::ints()->intoArrays()],
-    function(array $xs) {
-        return isAscending(myBrokenSort($xs));
-    }
-);
+### Installation
 
-var_dump(Quick::check(100, $brokenSort, ['echo' => true]));
+PhpQuickCheck is available via Packagist. Just add it to your composer.json:
 
 ```
-
-This will result in output similar to:
-
-```
-......F
 {
-    "result": false,
-    "seed": 1411398418957,
-    "failing_size": 6,
-    "num_tests": 7,
-    "fail": [
-        [-3,6,5,-5,1]
-    ],
-    "shrunk": {
-        "nodes_visited": 24,
-        "depth": 7,
-        "result": false,
-        "smallest": [
-            [1,0]
-        ]
-    }
-}
-
-```
-
-As you can see the list that failed was `[-3,6,5,-5,1]` which got shrunk to `[1,0]`. For each run
-the exact failing values are different but it will always shrink down to `[1,0]` or `[0,-1]`.
-
-The result also contains the seed so you can run the exact same test by passing it as an option
-to the check function:
-
-```php
-var_dump(Quick::check(100, $brokenSort, ['seed' => 1411398418957]));
-```
-
-This always fails with the array `[-3,6,5,-5,1]` after 7 tests and shrinks to `[1,0]`.
-
-### Generators
-
-```php
-// integers
-Gen::ints()->takeSamples();
-# => [0,1,-1,3,-2,0,3,3,-8,9]
-
-// ascii strings
-Gen::asciiStrings()->takeSamples();
-# => ["","O","@","&5h","QSuC","","c[,","[Q","  ){#o{Z","\"!F=n"]
-
-// arrays
-Gen::ints()->intoArrays()->takeSamples();
-# => [[],[],[-2],[0,0],[2],[4,-4,-1,2],[],[-5,-7,3,-2,2,0,-2], ...]
-
-// randomly choose between multiple generators
-Gen::oneOf(Gen::booleans(), Gen::ints())->takeSamples();
-# => [false,true,false,false,2,true,true,3,3,2]
-
-// randomly choose element from array
-Gen::elements('foo', 'bar', 'baz')->takeSamples();
-# => ["foo","foo","bar","bar","foo","foo","bar","baz","foo","baz"]
-
-// tuples of generators
-Gen::tuples(Gen::posInts(), Gen::alphaNumStrings())->takeSamples();
-# => [[0,""],[1,""],[0,"86"],[3,"NPG"],[4,"1q"],[4,"6"],[1,"Eu60MN"],[1,"6q9D8wm"], ...]
-
-// notEmpty - generated value must not be empty
-Gen::arraysOf(Gen::ints())->notEmpty()->takeSamples();
-# => [[0],[1],[1,1],[4,-1],[1],[0,0,1,1,-2],[-6,5,4,-2,-1],[3,7,-2],[-6,5],[-1,1,-4]]
-
-// suchThat - generated value must pass given predicate function
-// Note: Only do this if you can't generate the value deterministically. SuchThat may fail
-// if the generator doesn't return an acceptable value after 10 times.
-// (you can pass $maxTries as second argument if necessary).
-$oddInts = Gen::ints()->suchThat(function($i) {
-    return $i % 2 != 0;
-});
-$oddInts->takeSamples();
-# => [1,1,-1,-3,5,5,-3,-7,1,7]
-
-// frequency - 1/3 of the time generate posInts, 2/3 of the time booleans
-Gen::frequency(1, Gen::posInts(), 2, Gen::booleans())->takeSamples();
-# => [0,1,false,true,true,false,false,true,5,false]
-
-// fmap - transform the value generated
-Gen::posInts()->fmap(function($i) { return $i * 2; })->takeSamples();
-# => [0,2,4,2,4,8,10,8,0,6]
-
-// use fmap to generate day times
-$daytimes = Gen::tuples(Gen::choose(0, 23), Gen::choose(0, 59))
-    ->fmap(function($daytime) {
-        list($h, $m) = $daytime;
-        return sprintf('%02d:%02d', $h, $m);
-    });
-
-$daytimes->takeSamples();
-# => ["03:35","17:03","23:31","17:50","08:41","23:07","17:59","05:10","03:47","09:36"]
-
-// bind - create new generator based on generated value
-$bindSample = Gen::ints()->intoArrays()->notEmpty()
-    ->bind(function($ints) {
-        // choose one random element from the int array
-        return Gen::elements($ints)
-        // and return a tuple of the whole array and the chosen value
-        ->fmap(function($i) use ($ints) {
-            return [$ints, $i];
-        });
-    });
-$bindSample->takeSamples();
-# => [..., [[4,-2,5,3,5],4],[[-3,5,5,6,2],5],[[1,-3,1,5,2],-3], ...]
-
-// maps from string keys to daytimes
-$daytimes->mapsFrom(Gen::alphaStrings()->notEmpty())->notEmpty()->takeSamples();
-# => [{"v":"08:36"},{"i":"03:43","E":"14:38"},{"gUU":"03:08","UIc":"19:24"}, ...]
-
-// maps from strings to booleans
-Gen::alphaStrings()->notEmpty()->mapsTo(Gen::booleans())->notEmpty()->takeSamples();
-# => [{"J":true},{"pt":true,"TgQ":false},{"M":true,"jL":false},{"rm":true}, ...]
-
-// maps with fixed keys
-Gen::mapsWith([
-    'age'       => Gen::choose(18, 99),
-    'name'      => Gen::tuples(
-                       Gen::elements('Ada', 'Grace', 'Hedy'),
-                       Gen::elements('Lovelace', 'Hopper', 'Lamarr')
-                   )->fmap(function($name) {
-                       return "$name[0] $name[1]";
-                   })
-])->takeSamples();
-# => [{"age":50,"name":"Ada Lamarr"},{"age":97,"name":"Ada Hopper"},
-#     {"age":81,"name":"Ada Lovelace"},{"age":55,"name":"Hedy Lamarr"}, ...]
-```
-
-## Automatic detection for Generators
-
-The `Annotation` class provide a helper to automatically use a generator based
-on the documented types for the function :
-
-```
-/**
- * @param string $s
- * @return bool
- */
-function my_function($s) {
-    return is_string($s);
-}
-
-Annotation::check('my_function');
-```
-
-This will test `my_function` using the `Generator::strings()` generator.
-
-You can also register your own Generators using the
-`Annotation::register($type, $generator)` method.
-
-## PHPUnit
-
-To use php-quickcheck with PHPUnit, the assertion `\QCheck\PHPUnit\Constraint\Prop` is provided.
-It provides a static constructor method `Prop::check`. Similar to `Quick::check`, the method takes the size and allows also passing options if needed.
-
-```php
-public function testStringsAreLessThanTenChars()
-{
-    $property = Gen::forAll([Gen::strings()], function ($s): bool {
-        return 10 > strlen($s);
-    });
-    $this->assertThat($property, Prop::check(50)); // will fail
+  "require": {
+    "steos/php-quickcheck": "dev-master"
+  }
 }
 ```
-The assertion will delegate to `Quick::check($size, $property)`, and if the function returns anything but `true`, it will display a formatted failure description.
+
+### xdebug
+
+PhpQuickCheck uses a lot of functional programming techniques which leads to a lot of nested functions. With xdebug default settings it can quickly lead to this error:
 
 ```
-Failed asserting that property is true.
-Tests runs: 16, failing size: 15, seed: 1578486446175, smallest shrunk value(s):
-array (
-  0 => <failed shrunk value>,
-)
+Error: Maximum function nesting level of '256' reached, aborting!
 ```
 
-If an exception is thrown or a PHPUnit assertion fails, the message will be included in the output.
+This happens due to the infinite recursion protection setting `xdebug.max_nesting_level`.
+Best is to disable this or set it to a high value.
+The phpunit config sets it to `9999`.
 
-To reproduce a test result the displayed seed can be passed via `Prop::check($size, ['seed' => 1578486446175])`.
+### Performance
 
+- Disable xdebug to get tests to run faster. It has a huge impact on the runtime performance.
+
+- Use the GMP extension. The RNG will use the gmp functions if available. Otherwise it falls back to very slow bit-fiddling in php userland.
 
 ## Project Status
 
-PhpQuickCheck is highly experimental and in its very early stages. Only
-the core functionality has been implemented so far. At the moment the
-project is mostly still in a proof-of-concept stage and there is
-obviously no documentation whatsoever.
+PhpQuickCheck is somewhat experimental. The core functionality of clojure.test.check (as of March 2016) has been implemented.
 
 ### Contributing
 
-All suggestions, contributions and flames are welcome.
+All contributions are welcome.
 
 Feel free to fork and send a pull request. If you intend to make
 major changes please get in touch so we can coordinate our efforts.
@@ -304,7 +110,7 @@ port.
 
 ## Requirements
 
-Requires PHP 5.5.x with 64 bit integers and gmp extension.
+Requires PHP 5.5.x with 64 bit integers. The gmp extension is recommended but not required.
 
 ## License
 
