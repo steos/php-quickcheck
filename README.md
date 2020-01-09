@@ -103,6 +103,19 @@ All contributions are welcome.
 Feel free to fork and send a pull request. If you intend to make
 major changes please get in touch so we can coordinate our efforts.
 
+#### Dev Setup
+
+The repository contains a Dockerfile to quickly set up a dev environment.
+It is based on the `php:7.4.1-cli` image and adds xdebug, gmp and composer.
+
+```
+$ docker build -t php-quickcheck-dev .
+$ docker run --rm -it --mount src=$(pwd),target=/quickcheck,type=bind php-quickcheck-dev bash
+# cd /quickcheck
+# composer install
+# vendor/bin/phpunit
+```
+
 ## Credits
 
 All credit goes to clojure.test.check, this project is mostly just a
