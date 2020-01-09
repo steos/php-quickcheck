@@ -15,18 +15,21 @@ should hold true for all possible input.
 
 ### Example
 
+> Please note that this example and documentation refers to unreleased and unstable API.
+> For the documentation of the latest released stable API refer to the [v1.0.0 release tree](https://github.com/steos/php-quickcheck/tree/v1.0.0)
+
 ```php
 use QuickCheck\Generator as Gen;
-use QuickCheck\Quick;
+use QuickCheck\Property;
 
-$stringsAreNeverNumeric = Gen::forAll(
+$stringsAreNeverNumeric = Property::forAll(
     [Gen::asciiStrings()],
     function($str) {
         return !is_numeric($str);
     }
 );
 
-$result = Quick::check(1000, $stringsAreNeverNumeric);
+$result = $stringsAreNeverNumeric->check(1000);
 var_dump($result);
 ```
 
