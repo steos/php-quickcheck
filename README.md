@@ -109,11 +109,19 @@ The repository contains a Dockerfile to quickly set up a dev environment.
 It is based on the `php:7.4.1-cli` image and adds xdebug, gmp and composer.
 
 ```
-$ docker build -t php-quickcheck-dev .
+$ docker build -t php-quickcheck-dev dev-env
 $ docker run --rm -it --mount src=$(pwd),target=/quickcheck,type=bind php-quickcheck-dev bash
 # cd /quickcheck
 # composer install
 # vendor/bin/phpunit
+```
+
+The image also contains a small script `toggle-ext` to toggle php extensions on and off:
+
+```
+root@c871096e2c92:/quickcheck# toggle-ext xdebug
+xdebug is now disabled
+root@c871096e2c92:/quickcheck#
 ```
 
 ## Credits

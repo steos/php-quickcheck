@@ -1,0 +1,25 @@
+#!/bin/sh
+
+basedir="/usr/local/etc/php/conf.d"
+name="$1"
+path_name="$basedir/docker-php-ext-$name"
+
+if [ "$name" = "" ]; then
+  echo "usage: $(basename $0) <name>"
+  exit 1
+fi
+
+if [ -f "$path_name.ini" ]; then
+    mv "$path_name.ini" "$path_name.off"
+    echo "$name is now disabled"
+    exit 0
+fi
+
+if [ -f "$path_name.off" ]; then
+    mv "$path_name.off" "$path_name.ini"
+    echo "$name is now enabled"
+    exit 0
+fi
+
+echo "$name has no config in $basedir"
+exit 1

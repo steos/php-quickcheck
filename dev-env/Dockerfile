@@ -5,3 +5,5 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 RUN curl https://getcomposer.org/download/1.9.1/composer.phar -s --output /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
 RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+COPY toggle-ext /usr/local/bin/toggle-ext
+RUN chmod +x /usr/local/bin/toggle-ext && toggle-ext xdebug
