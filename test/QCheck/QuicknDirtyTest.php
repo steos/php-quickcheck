@@ -2,9 +2,10 @@
 
 namespace QCheck;
 
+use PHPUnit\Framework\TestCase;
 use QCheck\Generator as Gen;
 
-class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
+class QuicknDirtyTest extends TestCase {
     /**
      * @dataProvider ints
      */

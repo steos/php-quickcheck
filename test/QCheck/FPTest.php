@@ -2,7 +2,9 @@
 
 namespace QCheck;
 
-class FPTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class FPTest extends TestCase {
     function testTakeNth() {
         $this->assertEquals(
             [0, 2, 4],
