@@ -2,6 +2,12 @@
 
 namespace QCheck;
 
+use PHPUnit\Framework\TestCase;
+use QCheck\Exceptions\AmbiguousTypeAnnotationException;
+use QCheck\Exceptions\DuplicateGeneratorException;
+use QCheck\Exceptions\MissingTypeAnnotationException;
+use QCheck\Exceptions\NoGeneratorAnnotationException;
+
 /**
  * @param string $a
  * @return bool
@@ -160,12 +166,12 @@ class _AnnotationTestClass {
     }
 }
 
-class AnnotationTest extends \PHPUnit_Framework_TestCase {
+class AnnotationTest extends TestCase {
     static $test = null;
     static $fun = null;
     static $invoke = null;
 
-    static function setUpBeforeClass() {
+    static function setUpBeforeClass(): void {
         self::$test = new _AnnotationTestClass();
 
         /**
@@ -267,25 +273,25 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getFaultyMethods
-     * @expectedException QCheck\Exceptions\MissingTypeAnnotationException
      */
     function testNoTypeString($function) {
+        $this->expectException(MissingTypeAnnotationException::class);
         Annotation::types(self::getStringCallable($function));
     }
 
     /**
      * @dataProvider getFaultyMethods
-     * @expectedException QCheck\Exceptions\MissingTypeAnnotationException
      */
     function testNoTypeArray($function) {
+        $this->expectException(MissingTypeAnnotationException::class);
         Annotation::types(self::getArrayCallable($function));
     }
 
     /**
      * @dataProvider getFaultyMethods
-     * @expectedException QCheck\Exceptions\MissingTypeAnnotationException
      */
     function testNoTypeObject($function) {
+        $this->expectException(MissingTypeAnnotationException::class);
         Annotation::types(self::getObjectCallable($function));
     }
 
@@ -297,25 +303,25 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getAmbiguousMethods
-     * @expectedException QCheck\Exceptions\AmbiguousTypeAnnotationException
      */
     function testAmbiguousTypeString($function) {
+        $this->expectException(AmbiguousTypeAnnotationException::class);
         Annotation::types(self::getStringCallable($function));
     }
 
     /**
      * @dataProvider getAmbiguousMethods
-     * @expectedException QCheck\Exceptions\AmbiguousTypeAnnotationException
      */
     function testAmbiguousTypeArray($function) {
+        $this->expectException(AmbiguousTypeAnnotationException::class);
         Annotation::types(self::getArrayCallable($function));
     }
 
     /**
      * @dataProvider getAmbiguousMethods
-     * @expectedException QCheck\Exceptions\AmbiguousTypeAnnotationException
      */
     function testAmbiguousTypeObject($function) {
+        $this->expectException(AmbiguousTypeAnnotationException::class);
         Annotation::types(self::getObjectCallable($function));
     }
 
@@ -327,25 +333,25 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getNoGeneratorMethods
-     * @expectedException QCheck\Exceptions\NoGeneratorAnnotationException
      */
     function testNoGeneratorTypeString($function) {
+        $this->expectException(NoGeneratorAnnotationException::class);
         Annotation::check(self::getStringCallable($function));
     }
 
     /**
      * @dataProvider getNoGeneratorMethods
-     * @expectedException QCheck\Exceptions\NoGeneratorAnnotationException
      */
     function testNoGeneratorTypeArray($function) {
+        $this->expectException(NoGeneratorAnnotationException::class);
         Annotation::check(self::getArrayCallable($function));
     }
 
     /**
      * @dataProvider getNoGeneratorMethods
-     * @expectedException QCheck\Exceptions\NoGeneratorAnnotationException
      */
     function testNoGeneratorTypeObject($function) {
+        $this->expectException(NoGeneratorAnnotationException::class);
         Annotation::check(self::getObjectCallable($function));
     }
 
@@ -381,10 +387,8 @@ class AnnotationTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($object['result']);
     }
 
-    /**
-     * @expectedException QCheck\Exceptions\DuplicateGeneratorException
-     */
     function testDuplicateRegister() {
+        $this->expectException(DuplicateGeneratorException::class);
         $generator = Generator::any()->fmap(function() { return new _TestClass(); });
         Annotation::register('_TestClass', $generator);
         Annotation::register('_TestClass', $generator);

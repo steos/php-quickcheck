@@ -2,9 +2,10 @@
 
 namespace QCheck;
 
+use PHPUnit\Framework\TestCase;
 use QCheck\Generator as Gen;
 
-class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
+class QuicknDirtyTest extends TestCase {
     /**
      * @dataProvider ints
      */
@@ -31,7 +32,7 @@ class QuicknDirtyTest extends \PHPUnit_Framework_TestCase {
         $prop = Gen::forAll([Gen::asciiStrings()], function($s) {
             return !is_numeric($s);
         });
-        $result = Quick::check(1000, $prop);
+        $result = Quick::check(10000, $prop);
         $this->assertFalse($result['result']);
         $smallest = $result['shrunk']['smallest'][0];
         $this->assertEquals('0', $smallest,
