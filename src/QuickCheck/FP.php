@@ -1,11 +1,11 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 /**
  * Helper for a functional programming style.
  *
- * @package QCheck
+ * @package QuickCheck
  */
 class FP
 {

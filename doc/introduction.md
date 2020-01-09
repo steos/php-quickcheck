@@ -3,8 +3,8 @@
 Here is a failing example:
 
 ```php
-use QCheck\Generator as Gen;
-use QCheck\Quick;
+use QuickCheck\Generator as Gen;
+use QuickCheck\Quick;
 
 $stringsAreNeverNumeric = Gen::forAll(
     [Gen::asciiStrings()],

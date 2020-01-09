@@ -1,12 +1,12 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 /**
  * A lazy monadic multi-way tree, used for shrinking.
  * This implementation is based on clojure.test.check.rose-tree.
  *
- * @package QCheck
+ * @package QuickCheck
  */
 class RoseTree
 {

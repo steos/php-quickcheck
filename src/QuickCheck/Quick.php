@@ -1,8 +1,8 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
-use QCheck\Generator as Gen;
+use QuickCheck\Generator as Gen;
 
 class Quick
 {

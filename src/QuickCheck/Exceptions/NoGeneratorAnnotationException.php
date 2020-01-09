@@ -1,5 +1,5 @@
 <?php
 
-namespace QCheck\Exceptions;
+namespace QuickCheck\Exceptions;
 
 class NoGeneratorAnnotationException extends AnnotationException {}

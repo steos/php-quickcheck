@@ -1,12 +1,12 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 use PHPUnit\Framework\TestCase;
-use QCheck\Exceptions\AmbiguousTypeAnnotationException;
-use QCheck\Exceptions\DuplicateGeneratorException;
-use QCheck\Exceptions\MissingTypeAnnotationException;
-use QCheck\Exceptions\NoGeneratorAnnotationException;
+use QuickCheck\Exceptions\AmbiguousTypeAnnotationException;
+use QuickCheck\Exceptions\DuplicateGeneratorException;
+use QuickCheck\Exceptions\MissingTypeAnnotationException;
+use QuickCheck\Exceptions\NoGeneratorAnnotationException;
 
 /**
  * @param string $a
@@ -186,7 +186,7 @@ class AnnotationTest extends TestCase {
     }
 
     static function getNamespace() {
-        return 'QCheck\_AnnotationTestClass';
+        return 'QuickCheck\_AnnotationTestClass';
     }
 
     static function getArrayCallable($function) {
@@ -202,12 +202,12 @@ class AnnotationTest extends TestCase {
     }
 
     function testTypeByName() {
-        $type = Annotation::types('QCheck\_annotation_test_function');
+        $type = Annotation::types('QuickCheck\_annotation_test_function');
         $this->assertEquals($type, array('a' => 'string'));
     }
 
     function testCheckByName() {
-        $result = Annotation::check('QCheck\_annotation_test_function');
+        $result = Annotation::check('QuickCheck\_annotation_test_function');
         $this->assertTrue($result['result']);
     }
 

@@ -1,5 +1,5 @@
 <?php
 
-namespace QCheck\Exceptions;
+namespace QuickCheck\Exceptions;
 
 class AmbiguousTypeAnnotationException extends AnnotationException {}

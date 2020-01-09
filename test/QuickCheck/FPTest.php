@@ -1,6 +1,6 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 use PHPUnit\Framework\TestCase;
 

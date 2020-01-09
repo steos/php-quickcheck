@@ -1,9 +1,9 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 use PHPUnit\Framework\TestCase;
-use QCheck\Generator as Gen;
+use QuickCheck\Generator as Gen;
 
 class QuicknDirtyTest extends TestCase {
     /**

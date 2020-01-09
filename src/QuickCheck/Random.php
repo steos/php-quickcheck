@@ -1,6 +1,6 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 /**
  * This implementation is ripped straight from java.util.Random

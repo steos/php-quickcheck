@@ -1,9 +1,9 @@
 <?php
 
-namespace QCheck\PHPUnit\Constraint;
+namespace QuickCheck\PHPUnit\Constraint;
 
 use PHPUnit\Framework\Constraint\Constraint;
-use QCheck\Quick;
+use QuickCheck\Quick;
 
 class Prop extends Constraint
 {

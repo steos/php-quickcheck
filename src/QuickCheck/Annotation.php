@@ -1,18 +1,18 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
-use QCheck\Exceptions\AmbiguousTypeAnnotationException;
-use QCheck\Exceptions\AnnotationException;
-use QCheck\Exceptions\DuplicateGeneratorException;
-use QCheck\Exceptions\MissingTypeAnnotationException;
-use QCheck\Exceptions\NoGeneratorAnnotationException;
+use QuickCheck\Exceptions\AmbiguousTypeAnnotationException;
+use QuickCheck\Exceptions\AnnotationException;
+use QuickCheck\Exceptions\DuplicateGeneratorException;
+use QuickCheck\Exceptions\MissingTypeAnnotationException;
+use QuickCheck\Exceptions\NoGeneratorAnnotationException;
 
 /**
  * This class contains methods to determine the generator to use
  * based on the type annotation of the tested function / method.
  *
- * @package QCheck
+ * @package QuickCheck
  */
 class Annotation
 {
@@ -138,14 +138,14 @@ class Annotation
 
             if (array_key_exists($t, self::$generators)) {
                 $generator = self::$generators[$t];
-            } elseif (method_exists('QCheck\Generator', $t.'s')) {
+            } elseif (method_exists('QuickCheck\Generator', $t.'s')) {
                 $generator = $t.'s';
             } else {
                 throw new NoGeneratorAnnotationException("Unable to find a generator for $t");
             }
 
             if (! $generator instanceof Generator) {
-                $generator = call_user_func(array('QCheck\Generator', $generator));
+                $generator = call_user_func(array('QuickCheck\Generator', $generator));
             }
 
             if ($array) {

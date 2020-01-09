@@ -1,6 +1,6 @@
 ## PHPUnit
 
-To use php-quickcheck with PHPUnit, the assertion `\QCheck\PHPUnit\Constraint\Prop` is provided.
+To use php-quickcheck with PHPUnit, the assertion `\QuickCheck\PHPUnit\Constraint\Prop` is provided.
 It provides a static constructor method `Prop::check`. Similar to `Quick::check`, the method takes the size and allows also passing options if needed.
 
 ```php

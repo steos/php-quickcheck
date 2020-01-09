@@ -1,12 +1,12 @@
 <?php
 
-namespace QCheck;
+namespace QuickCheck;
 
 /**
  * A monadic generator that produces lazy shrink trees.
  * Based on clojure.test.check.generators.
  *
- * @package QCheck
+ * @package QuickCheck
  */
 class Generator
 {
@@ -401,7 +401,7 @@ class Generator
      */
     public static function alphaStrings()
     {
-        return self::alphaChars()->intoArrays()->fmap('QCheck\FP::str');
+        return self::alphaChars()->intoArrays()->toStrings();
     }
 
     /**

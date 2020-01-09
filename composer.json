@@ -9,9 +9,9 @@
         "phpunit/phpunit": "^8.5"
     },
     "autoload": {
-        "psr-4": {"QCheck\\": "src/QCheck/"}
+        "psr-4": {"QuickCheck\\": "src/QuickCheck/"}
     },
     "autoload-dev": {
-        "psr-4": {"QCheck\\": "test/QCheck/"}
+        "psr-4": {"QuickCheck\\": "test/QuickCheck/"}
     }
 }
