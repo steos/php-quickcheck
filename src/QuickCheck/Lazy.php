@@ -51,7 +51,7 @@ class Lazy
      * @param \Iterable $coll
      * @return \Generator
      */
-    public static function map(callable $f, $coll)
+    public static function map(callable $f, iterable $coll)
     {
         foreach ($coll as $x) {
             yield call_user_func($f, $x);
@@ -66,7 +66,7 @@ class Lazy
      * @param $coll
      * @return \Generator
      */
-    public static function filter(callable $f, $coll)
+    public static function filter(callable $f, iterable $coll)
     {
         foreach ($coll as $x) {
             if (call_user_func($f, $x)) {

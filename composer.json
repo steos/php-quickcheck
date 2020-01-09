@@ -3,7 +3,7 @@
     "description": "a generative testing library",
     "license": "BSD-3-Clause",
     "require": {
-        "php-64bit": ">=5.5.0"
+        "php-64bit": ">=7.4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5"

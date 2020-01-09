@@ -38,7 +38,7 @@ class ShrinkTree
     {
         return new self(
             call_user_func($f, $this->root),
-            function() use ($f) { return Lazy::map(Functions::method('fmap', $f), $this->getChildren()); }
+            fn() => Lazy::map(fn(ShrinkTree $x) => $x->fmap($f), $this->getChildren()),
         );
     }
 
@@ -47,7 +47,7 @@ class ShrinkTree
         $innerRoot = $this->root->getRoot();
         return new self($innerRoot, function() {
             return Lazy::concat(
-                Lazy::map(Functions::method('join'), $this->getChildren()),
+                Lazy::map(fn(self $x) => $x->join(), $this->getChildren()),
                 $this->root->getChildren()
             );
         });
@@ -62,19 +62,12 @@ class ShrinkTree
     {
         return new self(
             $this->root,
-            function() use ($pred) {
-                return Lazy::map(
-                    function (self $child) use ($pred) {
-                        return $child->filter($pred);
-                    },
-                    Lazy::filter(
-                        function (self $child) use ($pred) {
-                            return call_user_func($pred, $child->getRoot());
-                        },
-                        $this->getChildren()
-                    )
-                );
-            }
+            fn() => Lazy::map(fn(self $child) => $child->filter($pred),
+                Lazy::filter(
+                    fn(self $child) => call_user_func($pred, $child->getRoot()),
+                    $this->getChildren()
+                )
+            )
         );
     }
 
@@ -90,26 +83,15 @@ class ShrinkTree
     public static function zip(callable $f, $roses)
     {
         return new self(
-            call_user_func_array(
-                $f,
-                Lazy::realize(Lazy::map(Functions::method('getRoot'), $roses))
-            ),
-            function() use ($f, $roses) {
-                return Lazy::map(function($xs) use ($f) {
-                        return self::zip($f, $xs);
-                    },
-                    self::permutations($roses)
-                );
-            }
+            call_user_func_array($f, Lazy::realize(Lazy::map(fn(self $node) => $node->getRoot(), $roses))),
+            fn() => Lazy::map(fn($xs) => self::zip($f, $xs), self::permutations($roses))
         );
     }
 
     private static function remove(array $roses)
     {
         return Lazy::concat(
-            Lazy::map(function ($index) use ($roses) {
-                return Arrays::excludeNth($index, $roses);
-            }, array_keys($roses)),
+            Lazy::map(fn ($index) => Arrays::excludeNth($index, $roses), array_keys($roses)),
             self::permutations($roses)
         );
     }
@@ -121,17 +103,8 @@ class ShrinkTree
             return self::pure(call_user_func($f));
         } else {
             return new self(
-                call_user_func_array(
-                    $f,
-                    Lazy::realize(Lazy::map(Functions::method('getRoot'), $roses))
-                ),
-                function() use ($f, $roses) {
-                    return Lazy::map(function($x) use($f) {
-                            return self::shrink($f, $x);
-                        },
-                        self::remove($roses)
-                    );
-                }
+                call_user_func_array($f, Lazy::realize(Lazy::map(fn(self $node) => $node->getRoot(), $roses))),
+                fn() => Lazy::map(fn($x) => self::shrink($f, $x), self::remove($roses)),
             );
         }
     }
