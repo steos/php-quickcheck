@@ -119,3 +119,15 @@ Gen::mapsWith([
 # => [{"age":50,"name":"Ada Lamarr"},{"age":97,"name":"Ada Hopper"},
 #     {"age":81,"name":"Ada Lovelace"},{"age":55,"name":"Hedy Lamarr"}, ...]
 ```
+
+```php
+// recursive nested structures
+Gen::recursive(
+    function (Gen $innerTypes) {
+        return Gen::arraysOf($innerTypes);
+    },
+    Gen::posInts()
+)->takeSamples();
+# => "[[],[],[[[]]],[[[[2,3,1],[],[2,0,1]]],[[[3,1],[2,3,1],[]],
+#     [[],[3,1],[]]],[]],[0,1,1,3],[1],[[[[],[[5,6,3,0,2],[2,4],[3,4,0,2,4,0]],..."
+```
