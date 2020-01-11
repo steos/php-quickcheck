@@ -42,4 +42,14 @@ class Failure implements CheckResult
     function isFailure(): bool {
         return true;
     }
+
+    function dump(callable $encode): void
+    {
+        echo 'Failed after ', $this->numTests(), ' tests', PHP_EOL;
+        echo 'Seed: ', $this->seed(), PHP_EOL;
+        echo 'Failing input:', PHP_EOL;
+        echo call_user_func($encode, $this->test()->arguments()), PHP_EOL;
+        echo 'Smallest failing input:', PHP_EOL;
+        echo call_user_func($encode, $this->shrunk()->test()->arguments()), PHP_EOL;
+    }
 }

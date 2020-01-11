@@ -8,4 +8,5 @@ interface CheckResult
     function numTests(): int;
     function isFailure(): bool;
     function isSuccess(): bool;
+    function dump(callable $encode): void;
 }

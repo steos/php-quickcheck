@@ -31,4 +31,10 @@ class Success implements CheckResult
     {
         return false;
     }
+
+    function dump(callable $encode): void
+    {
+        echo $this->numTests(), ' tests were successful', PHP_EOL;
+        echo 'Seed: ', $this->seed(), PHP_EOL;
+    }
 }

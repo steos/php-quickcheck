@@ -11,18 +11,7 @@ $stringsAreNeverNumeric = Property::forAll(
 );
 
 $result = Property::check($stringsAreNeverNumeric, 1000);
-
-if ($result->isFailure()) {
-    echo 'Failed after ', $result->numTests(), ' tests', PHP_EOL;
-    echo 'Seed: ', $result->seed(), PHP_EOL;
-    echo 'Failing input:', PHP_EOL;
-    echo json_encode($result->test()->arguments()), PHP_EOL;
-    echo 'Smallest failing input:', PHP_EOL;
-    echo json_encode($result->shrunk()->test()->arguments()), PHP_EOL;
-} else {
-    echo $result->numTests(), ' tests were successful', PHP_EOL;
-    echo 'Seed: ', $result->seed(), PHP_EOL;
-}
+$result->dump('json_encode');
 ```
 
 This will produce something like the following output:
@@ -69,8 +58,7 @@ $brokenSort = Property::forAll(
 );
 
 $result = Property::check($brokenSort, 100);
-
-// same result reporting as above
+$result->dump('json_encode');
 ```
 
 This will result in output similar to:
@@ -91,7 +79,8 @@ The result also contains the seed so you can run the exact same test by passing 
 to the check function:
 
 ```php
-var_dump(Property::check($brokenSort, 100, ['seed' => 1411398418957]));
+Property::check($brokenSort, 100, ['seed' => 1411398418957])
+        ->dump('json_encode');
 ```
 
 This always fails with the array `[-3,6,5,-5,1]` after 7 tests and shrinks to `[1,0]`.
