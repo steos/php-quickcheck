@@ -36,8 +36,8 @@ Smallest failing input:
 ["0"]
 ```
 
-What this tells us that after 63 random tests the property was sucessfully falsified.
-The exact argument that caused the failure was "5" which then got shrunk to "0".
+What this tells us that after 834 random tests the property was sucessfully falsified.
+The exact argument that caused the failure was "9E70" which then got shrunk to "0".
 So our minimal failing case is the string "0".
 
 Here's another example:
