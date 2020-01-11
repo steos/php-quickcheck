@@ -130,7 +130,7 @@ All credit goes to clojure.test.check, this project is mostly just a port.
 
 ## Requirements
 
-Requires PHP 7.4.x with 64 bit integers. The gmp extension is recommended but not required.
+Requires PHP 7.3.x with 64 bit integers. The gmp extension is recommended but not required.
 
 ## License
 
