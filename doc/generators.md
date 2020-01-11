@@ -61,15 +61,15 @@ Gen::frequency(1, Gen::posInts(), 2, Gen::booleans())->takeSamples();
 ```
 
 ```php
-// fmap - transform the value generated
-Gen::posInts()->fmap(function($i) { return $i * 2; })->takeSamples();
+// map - transform the value generated
+Gen::posInts()->map(function($i) { return $i * 2; })->takeSamples();
 # => [0,2,4,2,4,8,10,8,0,6]
 ```
 
 ```php
-// use fmap to generate day times
+// use map to generate day times
 $daytimes = Gen::tuples(Gen::choose(0, 23), Gen::choose(0, 59))
-    ->fmap(function($daytime) {
+    ->map(function($daytime) {
         list($h, $m) = $daytime;
         return sprintf('%02d:%02d', $h, $m);
     });
@@ -79,17 +79,17 @@ $daytimes->takeSamples();
 ```
 
 ```php
-// bind - create new generator based on generated value
-$bindSample = Gen::ints()->intoArrays()->notEmpty()
-    ->bind(function($ints) {
+// chain - create new generator based on generated value
+$chainSample = Gen::ints()->intoArrays()->notEmpty()
+    ->chain(function($ints) {
         // choose one random element from the int array
         return Gen::elements($ints)
         // and return a tuple of the whole array and the chosen value
-        ->fmap(function($i) use ($ints) {
+        ->map(function($i) use ($ints) {
             return [$ints, $i];
         });
     });
-$bindSample->takeSamples();
+$chainSample->takeSamples();
 # => [..., [[4,-2,5,3,5],4],[[-3,5,5,6,2],5],[[1,-3,1,5,2],-3], ...]
 ```
 
@@ -112,7 +112,7 @@ Gen::mapsWith([
     'name'      => Gen::tuples(
                        Gen::elements('Ada', 'Grace', 'Hedy'),
                        Gen::elements('Lovelace', 'Hopper', 'Lamarr')
-                   )->fmap(function($name) {
+                   )->map(function($name) {
                        return "$name[0] $name[1]";
                    })
 ])->takeSamples();
