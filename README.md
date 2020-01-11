@@ -15,9 +15,6 @@ should hold true for all possible input.
 
 ### Example
 
-> Please note that this example and documentation refers to unreleased and unstable API.
-> For the documentation of the latest released stable API refer to the [v1.0.0 release tree](https://github.com/steos/php-quickcheck/tree/v1.0.0)
-
 ```php
 use QuickCheck\Generator as Gen;
 use QuickCheck\Property;
@@ -30,7 +27,20 @@ $stringsAreNeverNumeric = Property::forAll(
 );
 
 $result = Property::check($stringsAreNeverNumeric, 1000);
+$result->dump('json_encode');
 ```
+
+```
+Failed after 834 tests
+Seed: 1578763578270
+Failing input:
+["9E70"]
+Smallest failing input:
+["0"]
+```
+
+> Please note that this example and documentation refers to unreleased and unstable API.
+> For the documentation of the latest released stable API refer to the [v1.0.0 release tree](https://github.com/steos/php-quickcheck/tree/v1.0.0)
 
 ### Documentation
 
