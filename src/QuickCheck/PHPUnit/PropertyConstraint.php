@@ -10,7 +10,7 @@ class PropertyConstraint extends Constraint
      * @var int
      */
     private $size;
-    
+
     /**
      * @var array
      */
@@ -21,7 +21,7 @@ class PropertyConstraint extends Constraint
         $this->size = $n;
         $this->opts = $opts;
     }
-    
+
     public static function check($n = 100, array $opts = [])
     {
         return new self($n, $opts);
@@ -35,7 +35,7 @@ class PropertyConstraint extends Constraint
 
     protected function matches($other): bool
     {
-        return @$other['result'] === true;
+        return $other['result'] && !($other['result'] instanceof \Exception);
     }
 
     public function toString(): string
