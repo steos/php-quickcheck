@@ -3,6 +3,8 @@
 namespace QuickCheck\PHPUnit;
 
 use PHPUnit\Framework\Constraint\Constraint;
+use QuickCheck\Failure;
+use QuickCheck\Property;
 
 class PropertyConstraint extends Constraint
 {
@@ -29,13 +31,13 @@ class PropertyConstraint extends Constraint
 
     public function evaluate($prop, string $description = '', bool $returnResult = false)
     {
-        $result = $prop->check($this->size, $this->opts);
+        $result = Property::check($prop, $this->size, $this->opts);
         return parent::evaluate($result, $description, $returnResult);
     }
 
     protected function matches($other): bool
     {
-        return $other['result'] && !($other['result'] instanceof \Exception);
+        return $other->isSuccess();
     }
 
     public function toString(): string
@@ -48,15 +50,18 @@ class PropertyConstraint extends Constraint
         return $this->toString();
     }
 
-    protected function additionalFailureDescription($other): string
+    /**
+     * @param Failure $failure
+     * @return string
+     */
+    protected function additionalFailureDescription($failure): string
     {
         return sprintf(
-            "%sTests runs: %d, failing size: %d, seed: %s, smallest shrunk value(s):\n%s",
-            $this->extractExceptionMessage($other['result']),
-            $other['num_tests'],
-            $other['failing_size'],
-            $other['seed'],
-            var_export($other['shrunk']['smallest'], true)
+            "%sTest runs: %d, seed: %s, smallest shrunk value(s):\n%s",
+            $this->extractExceptionMessage($failure->test()->result()),
+            $failure->numTests(),
+            $failure->seed(),
+            var_export($failure->shrunk()->test()->arguments(), true)
         );
     }
 

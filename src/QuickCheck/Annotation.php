@@ -115,7 +115,7 @@ class Annotation
      * @param callable $p The predicate
      * @param int $n number of iteration
      * @throws NoGeneratorAnnotationException
-     * @return array
+     * @return CheckResult
      */
     public static function check(callable $f, callable $p = null, $n = 10)
     {
@@ -159,6 +159,6 @@ class Annotation
             return $p($result);
         };
 
-        return Property::forAll($args, $check)->check($n);
+        return Property::check(Property::forAll($args, $check), $n);
     }
 }

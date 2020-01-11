@@ -29,28 +29,7 @@ $stringsAreNeverNumeric = Property::forAll(
     }
 );
 
-$result = $stringsAreNeverNumeric->check(1000);
-var_dump($result);
-```
-
-This will produce something like the following output (json encoded for readability):
-
-```
-"result": false,
-"seed": 1411306705536,
-"failing_size": 109,
-"num_tests": 110,
-"fail": [
-    "727"
-],
-"shrunk": {
-    "nodes_visited": 15,
-    "depth": 4,
-    "result": false,
-    "smallest": [
-        "0"
-    ]
-}
+$result = Property::check($stringsAreNeverNumeric, 1000);
 ```
 
 ### Documentation

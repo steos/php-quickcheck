@@ -8,15 +8,14 @@ namespace QuickCheck;
  *
  * @package QuickCheck
  */
-class ShrinkTree
+class ShrinkTreeNode
 {
-    private $root;
-
+    private $value;
     private $children;
 
-    public function __construct($root, callable $children)
+    public function __construct($value, callable $children)
     {
-        $this->root     = $root;
+        $this->value = $value;
         $this->children = $children;
     }
 
@@ -27,9 +26,9 @@ class ShrinkTree
         });
     }
 
-    public function getRoot()
+    public function getValue()
     {
-        return $this->root;
+        return $this->value;
     }
 
     public function getChildren()
@@ -37,14 +36,14 @@ class ShrinkTree
         return call_user_func($this->children);
     }
 
-    public function fmap(callable $f)
+    public function map(callable $f)
     {
         return new self(
-            call_user_func($f, $this->root),
+            call_user_func($f, $this->value),
             function () use ($f) {
                 return Lazy::map(
-                    function (ShrinkTree $x) use ($f) {
-                        return $x->fmap($f);
+                    function (ShrinkTreeNode $x) use ($f) {
+                        return $x->map($f);
                     },
                     $this->getChildren()
                 );
@@ -54,8 +53,8 @@ class ShrinkTree
 
     public function join()
     {
-        $innerRoot = $this->root->getRoot();
-        return new self($innerRoot, function () {
+        $innerRoot = $this->value->getValue();
+        return new self($innerRoot, function() {
             return Lazy::concat(
                 Lazy::map(
                     function (self $x) {
@@ -63,20 +62,20 @@ class ShrinkTree
                     },
                     $this->getChildren()
                 ),
-                $this->root->getChildren()
+                $this->value->getChildren()
             );
         });
     }
 
-    public function bind(callable $f)
+    public function chain(callable $f)
     {
-        return $this->fmap($f)->join();
+        return $this->map($f)->join();
     }
 
     public function filter(callable $pred)
     {
         return new self(
-            $this->root,
+            $this->value,
             function () use ($pred) {
                 return Lazy::map(
                     function (self $child) use ($pred) {
@@ -84,7 +83,7 @@ class ShrinkTree
                     },
                     Lazy::filter(
                         function (self $child) use ($pred) {
-                            return call_user_func($pred, $child->getRoot());
+                            return call_user_func($pred, $child->getValue());
                         },
                         $this->getChildren()
                     )
@@ -93,67 +92,67 @@ class ShrinkTree
         );
     }
 
-    private static function permutations(array $roses)
+    private static function permutations(array $nodes)
     {
-        foreach ($roses as $index => $rose) {
-            foreach ($rose->getChildren() as $child) {
-                yield Arrays::assoc($roses, $index, $child);
+        foreach ($nodes as $index => $node) {
+            foreach ($node->getChildren() as $child) {
+                yield Arrays::assoc($nodes, $index, $child);
             }
         }
     }
 
-    public static function zip(callable $f, $roses)
+    public static function zip(callable $f, $nodes)
     {
         return new self(
             call_user_func_array($f, Lazy::realize(Lazy::map(
                 function (self $node) {
-                    return $node->getRoot();
+                    return $node->getValue();
                 },
-                $roses
+                $nodes
             ))),
-            function () use ($f, $roses) {
+            function () use ($f, $nodes) {
                 return Lazy::map(
                     function ($xs) use ($f) {
                         return self::zip($f, $xs);
                     },
-                    self::permutations($roses)
+                    self::permutations($nodes)
                 );
             }
         );
     }
 
-    private static function remove(array $roses)
+    private static function remove(array $nodes)
     {
         return Lazy::concat(
             Lazy::map(
-                function ($index) use ($roses) {
-                    return Arrays::excludeNth($index, $roses);
+                function ($index) use ($nodes) {
+                    return Arrays::excludeNth($index, $nodes);
                 },
-                array_keys($roses)
+                array_keys($nodes)
             ),
-            self::permutations($roses)
+            self::permutations($nodes)
         );
     }
 
-    public static function shrink(callable $f, $roses)
+    public static function shrink(callable $f, $nodes)
     {
-        $roses = Lazy::realize($roses);
-        if (empty($roses)) {
+        $nodes = Lazy::realize($nodes);
+        if (empty($nodes)) {
             return self::pure(call_user_func($f));
         } else {
             return new self(
                 call_user_func_array($f, Lazy::realize(Lazy::map(
                     function (self $node) {
-                        return $node->getRoot();
+                        return $node->getValue();
                     },
-                    $roses
+                    $nodes
                 ))),
-                function () use ($f, $roses) {
+                function () use ($f, $nodes) {
                     return Lazy::map(
                         function ($x) use ($f) {
                             return self::shrink($f, $x);
                         },
-                        self::remove($roses)
+                        self::remove($nodes)
                     );
                 }
             );

@@ -31,11 +31,14 @@ class QuicknDirtyTest extends TestCase {
     }
 
     function testQuickCheckShrink() {
-        $result = Property::forAll([Gen::asciiStrings()], function($s) {
+        $p = Property::forAll([Gen::asciiStrings()], function($s) {
             return !is_numeric($s);
-        })->check(10000);
-        $this->assertFalse($result['result']);
-        $smallest = $result['shrunk']['smallest'][0];
+        });
+
+        $result = Property::check($p, 10000);
+        $this->assertNotTrue($result, 'property was not falsified');
+
+        $smallest = $result->shrunk()->test()->arguments()[0];
         $this->assertEquals('0', $smallest,
             "expected smallest to be '0' but got '$smallest'");
     }

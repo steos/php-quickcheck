@@ -3,9 +3,6 @@
 Here is a failing example:
 
 ```php
-use QuickCheck\Generator as Gen;
-use QuickCheck\Property;
-
 $stringsAreNeverNumeric = Property::forAll(
     [Gen::asciiStrings()],
     function($str) {
@@ -13,32 +10,34 @@ $stringsAreNeverNumeric = Property::forAll(
     }
 );
 
-$result = $stringsAreNeverNumeric->check(1000);
-var_dump($result);
-```
+$result = Property::check($stringsAreNeverNumeric, 1000);
 
-This will produce something like the following output (json encoded for readability):
-
-```
-"result": false,
-"seed": 1411306705536,
-"failing_size": 109,
-"num_tests": 110,
-"fail": [
-    "727"
-],
-"shrunk": {
-    "nodes_visited": 15,
-    "depth": 4,
-    "result": false,
-    "smallest": [
-        "0"
-    ]
+if ($result->isFailure()) {
+    echo 'Failed after ', $result->numTests(), ' tests', PHP_EOL;
+    echo 'Seed: ', $result->seed(), PHP_EOL;
+    echo 'Failing input:', PHP_EOL;
+    echo json_encode($result->test()->arguments()), PHP_EOL;
+    echo 'Smallest failing input:', PHP_EOL;
+    echo json_encode($result->shrunk()->test()->arguments()), PHP_EOL;
+} else {
+    echo $result->numTests(), ' tests were successful', PHP_EOL;
+    echo 'Seed: ', $result->seed(), PHP_EOL;
 }
 ```
 
-What this tells us that after 110 random tests the property was sucessfully falsified.
-The exact argument that caused the failure was "727" which then got shrunk to "0".
+This will produce something like the following output:
+
+```
+Failed after 834 tests
+Seed: 1578763578270
+Failing input:
+["9E70"]
+Smallest failing input:
+["0"]
+```
+
+What this tells us that after 63 random tests the property was sucessfully falsified.
+The exact argument that caused the failure was "5" which then got shrunk to "0".
 So our minimal failing case is the string "0".
 
 Here's another example:
@@ -69,42 +68,30 @@ $brokenSort = Property::forAll(
     }
 );
 
-var_dump($brokenSort->check(100, ['echo' => true]));
+$result = Property::check($brokenSort, 100);
 
+// same result reporting as above
 ```
 
 This will result in output similar to:
 
 ```
-......F
-{
-    "result": false,
-    "seed": 1411398418957,
-    "failing_size": 6,
-    "num_tests": 7,
-    "fail": [
-        [-3,6,5,-5,1]
-    ],
-    "shrunk": {
-        "nodes_visited": 24,
-        "depth": 7,
-        "result": false,
-        "smallest": [
-            [1,0]
-        ]
-    }
-}
-
+Failed after 7 tests
+Seed: 1578763516428
+Failing input:
+[[3,-5,-1,-1,-6]]
+Smallest failing input:
+[[0,-1]]
 ```
 
-As you can see the list that failed was `[-3,6,5,-5,1]` which got shrunk to `[1,0]`. For each run
+As you can see the list that failed was `[3,-5,-1,-1,-6]` which got shrunk to `[0,-1]`. For each run
 the exact failing values are different but it will always shrink down to `[1,0]` or `[0,-1]`.
 
 The result also contains the seed so you can run the exact same test by passing it as an option
 to the check function:
 
 ```php
-var_dump($brokenSort->check(100, ['seed' => 1411398418957]));
+var_dump(Property::check($brokenSort, 100, ['seed' => 1411398418957]));
 ```
 
 This always fails with the array `[-3,6,5,-5,1]` after 7 tests and shrinks to `[1,0]`.

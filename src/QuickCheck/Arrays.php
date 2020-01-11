@@ -43,7 +43,7 @@ class Arrays
      * @param $x
      * @return array
      */
-    public static function push(array $xs, $x)
+    public static function append(array $xs, $x)
     {
         $xs[] = $x;
         return $xs;

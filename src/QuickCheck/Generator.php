@@ -22,21 +22,21 @@ class Generator
      *
      * @param Random $rng
      * @param int $size
-     * @return ShrinkTree
+     * @return ShrinkTreeNode
      */
     public function call(Random $rng, $size)
     {
         return call_user_func($this->gen, $rng, $size);
     }
 
-    public static function pureGen($value)
+    public static function pure($value)
     {
         return new self(function ($rng, $size) use ($value) {
             return $value;
         });
     }
 
-    public function fmapGen(callable $k)
+    public function fmap(callable $k)
     {
         return new self(function ($rng, $size) use ($k) {
             return call_user_func($k, call_user_func($this->gen, $rng, $size));
@@ -44,12 +44,12 @@ class Generator
     }
 
     /**
-     * Creates a new generator by mapping $k over the ShrinkTree of this generator
+     * Creates a new generator by mapping $k over the value of this generator
      *
-     * @param callable $k must take a ShrinkTree and return a new Generator
+     * @param callable $k must return a new Generator
      * @return Generator
      */
-    public function bindGen(callable $k)
+    public function flatMap(callable $k)
     {
         return new self(function ($rng, $size) use ($k) {
             return call_user_func($k, $this->call($rng, $size))->call($rng, $size);
@@ -59,22 +59,21 @@ class Generator
     /**
      * turns a list of generators into a generator of a list
      *
-     * @param Generator[]|\Iterator $ms
+     * @param Generator[]|\Iterator $xs
      * @return Generator
      */
-    private static function sequence($ms)
+    private static function sequence($xs)
     {
-
         return Lazy::reduce(
             function (Generator $acc, Generator $elem) {
-                return $acc->bindGen(function ($xs) use ($elem) {
-                    return $elem->bindGen(function ($y) use ($xs) {
-                        return self::pureGen(Arrays::push($xs, $y));
+                return $acc->flatMap(function ($xs) use ($elem) {
+                    return $elem->flatMap(function ($y) use ($xs) {
+                        return self::pure(Arrays::append($xs, $y));
                     });
                 });
             },
-            $ms,
-            self::pureGen([])
+            $xs,
+            self::pure([])
         );
     }
 
@@ -84,10 +83,10 @@ class Generator
      * @param callable $f
      * @return Generator
      */
-    public function fmap(callable $f)
+    public function map(callable $f)
     {
-        return $this->fmapGen(function (ShrinkTree $rose) use ($f) {
-            return $rose->fmap($f);
+        return $this->fmap(function (ShrinkTreeNode $node) use ($f) {
+            return $node->map($f);
         });
     }
 
@@ -98,18 +97,18 @@ class Generator
      * @param callable $k
      * @return Generator
      */
-    public function bind(callable $k)
+    public function chain(callable $k)
     {
-        return $this->bindGen(
-            function (ShrinkTree $rose) use ($k) {
+        return $this->flatMap(
+            function (ShrinkTreeNode $rose) use ($k) {
                 $gen = new self(function ($rng, $size) use ($rose, $k) {
-                    return $rose->fmap($k)->fmap(
+                    return $rose->map($k)->map(
                         function (self $g) use ($rng, $size) {
                             return $g->call($rng, $size);
                         }
                     );
                 });
-                return $gen->fmapGen(function (ShrinkTree $node) {
+                return $gen->fmap(function (ShrinkTreeNode $node) {
                     return $node->join();
                 });
             }
@@ -124,7 +123,7 @@ class Generator
      */
     public static function unit($value)
     {
-        return self::pureGen(ShrinkTree::pure($value));
+        return self::pure(ShrinkTreeNode::pure($value));
     }
 
     // helpers
@@ -148,7 +147,7 @@ class Generator
         $rng = new Random();
         return Lazy::map(
             function ($size) use ($rng) {
-                return $this->call($rng, $size)->getRoot();
+                return $this->call($rng, $size)->getValue();
             },
             self::sizes($maxSize)
         );
@@ -189,7 +188,7 @@ class Generator
 
     public static function intRoseTree($val)
     {
-        return new ShrinkTree($val, function () use ($val) {
+        return new ShrinkTreeNode($val, function () use ($val) {
             return Lazy::map(
                 function ($x) {
                     return self::intRoseTree($x);
@@ -237,7 +236,7 @@ class Generator
     public static function choose($lower, $upper)
     {
         return new self(function (Random $rng, $size) use ($lower, $upper) {
-            $val  = self::randRange($rng, $lower, $upper);
+            $val = self::randRange($rng, $lower, $upper);
             $tree = self::intRoseTree($val);
             return $tree->filter(function ($x) use ($lower, $upper) {
                 return $x >= $lower && $x <= $upper;
@@ -274,8 +273,8 @@ class Generator
     public static function tuples()
     {
         $seq = self::sequence(self::getArgs(func_get_args()));
-        return $seq->bindGen(function ($roses) {
-            return self::pureGen(ShrinkTree::zip(
+        return $seq->flatMap(function ($roses) {
+            return self::pure(ShrinkTreeNode::zip(
                 function (...$xs) {
                     return $xs;
                 },
@@ -309,10 +308,10 @@ class Generator
         $sized = self::sized(function ($s) {
             return self::choose(0, $s);
         });
-        return $sized->bindGen(function (ShrinkTree $numRose) use ($gen) {
-            $seq = self::sequence(Lazy::repeat($numRose->getRoot(), $gen));
-            return $seq->bindGen(function ($roses) {
-                return self::pureGen(ShrinkTree::shrink(function (...$xs) {
+        return $sized->flatMap(function (ShrinkTreeNode $numRose) use ($gen) {
+            $seq = self::sequence(Lazy::repeat($numRose->getValue(), $gen));
+            return $seq->flatMap(function ($roses) {
+                return self::pure(ShrinkTreeNode::shrink(function (...$xs) {
                     return $xs;
                 }, $roses));
             });
@@ -337,7 +336,7 @@ class Generator
      */
     public static function chars()
     {
-        return self::choose(0, 255)->fmap('chr');
+        return self::choose(0, 255)->map('chr');
     }
 
     /**
@@ -347,7 +346,7 @@ class Generator
      */
     public static function asciiChars()
     {
-        return self::choose(32, 126)->fmap('chr');
+        return self::choose(32, 126)->map('chr');
     }
 
     /**
@@ -361,7 +360,7 @@ class Generator
             self::choose(48, 57),
             self::choose(65, 90),
             self::choose(97, 122)
-        )->fmap('chr');
+        )->map('chr');
     }
 
     /**
@@ -374,19 +373,19 @@ class Generator
         return self::oneOf(
             self::choose(65, 90),
             self::choose(97, 122)
-        )->fmap('chr');
+        )->map('chr');
     }
 
     public function dontShrink()
     {
-        return $this->bindGen(function (ShrinkTree $x) {
+        return $this->flatMap(function (ShrinkTreeNode $x) {
             return self::unit($x->getRoot());
         });
     }
 
     public function toStrings()
     {
-        return $this->fmap(function ($x) {
+        return $this->map(function ($x) {
             return is_array($x) ? implode('', $x) : (string)$x;
         });
     }
@@ -444,7 +443,7 @@ class Generator
     {
         return self::tuples($keygen, $valgen)
                    ->intoArrays()
-                   ->fmap(function ($tuples) {
+                   ->map(function ($tuples) {
                        $map = [];
                        foreach ($tuples as $tuple) {
                            [$key, $val] = $tuple;
@@ -493,7 +492,7 @@ class Generator
      */
     public static function mapsWith(array $map)
     {
-        return self::tuples($map)->fmap(function ($vals) use ($map) {
+        return self::tuples($map)->map(function ($vals) use ($map) {
             return array_combine(array_keys($map), $vals);
         });
     }
@@ -514,14 +513,14 @@ class Generator
     public static function oneOf()
     {
         $generators = self::getArgs(func_get_args());
-        $num        = count($generators);
+        $num = count($generators);
         if ($num < 2) {
             throw new \InvalidArgumentException();
         }
         return self::choose(0, $num - 1)
-                   ->bind(function ($index) use ($generators) {
-                       return $generators[$index];
-                   });
+            ->chain(function ($index) use ($generators) {
+                return $generators[$index];
+            });
     }
 
     /**
@@ -542,13 +541,13 @@ class Generator
             throw new \InvalidArgumentException();
         }
         return self::choose(0, count($coll) - 1)
-                   ->bindGen(function (ShrinkTree $rose) use ($coll) {
-                       return self::pureGen($rose->fmap(
-                           function ($index) use ($coll) {
-                               return $coll[$index];
-                           }
-                       ));
-                   });
+            ->flatMap(function (ShrinkTreeNode $rose) use ($coll) {
+                return self::pure($rose->map(
+                    function ($index) use ($coll) {
+                        return $coll[$index];
+                    }
+                ));
+            });
     }
 
     /**
@@ -568,7 +567,7 @@ class Generator
         return new self(function ($rng, $size) use ($pred, $maxTries) {
             for ($i = 0; $i < $maxTries; ++$i) {
                 $value = $this->call($rng, $size);
-                if (call_user_func($pred, $value->getRoot())) {
+                if (call_user_func($pred, $value->getValue())) {
                     return $value->filter($pred);
                 }
                 $size++;
@@ -604,7 +603,7 @@ class Generator
      */
     public static function posInts()
     {
-        return self::ints()->fmap(function ($x) {
+        return self::ints()->map(function ($x) {
             return abs($x);
         });
     }
@@ -617,7 +616,7 @@ class Generator
      */
     public static function negInts()
     {
-        return self::ints()->fmap(function ($x) {
+        return self::ints()->map(function ($x) {
             return -abs($x);
         });
     }
@@ -630,8 +629,8 @@ class Generator
      */
     public static function strictlyPosInts()
     {
-        return self::ints()->fmap(function ($x) {
-            return abs($x) + 1;
+        return self::ints()->map(function ($x) {
+            return abs($x)+1;
         });
     }
 
@@ -643,8 +642,8 @@ class Generator
      */
     public static function strictlyNegInts()
     {
-        return self::ints()->fmap(function ($x) {
-            return -abs($x) - 1;
+        return self::ints()->map(function ($x) {
+            return -abs($x)-1;
         });
     }
 
@@ -671,9 +670,9 @@ class Generator
         }
         $total = array_sum(Lazy::realize(Lazy::takeNth(2, $args)));
         $pairs = Lazy::realize(Lazy::partition(2, $args));
-        return self::choose(1, $total)->bindGen(
-            function (ShrinkTree $rose) use ($pairs) {
-                $n = $rose->getRoot();
+        return self::choose(1, $total)->flatMap(
+            function (ShrinkTreeNode $rose) use ($pairs) {
+                $n = $rose->getValue();
                 foreach ($pairs as $pair) {
                     [$chance, $gen] = $pair;
                     if ($n <= $chance) {
@@ -734,7 +733,7 @@ class Generator
     public static function recursive(callable $container, self $scalar)
     {
         return self::sized(function ($size) use ($container, $scalar) {
-            return self::choose(1, 5)->bind(
+            return self::choose(1, 5)->chain(
                 function ($height) use ($container, $scalar, $size) {
                     $childrenSize = pow($size, 1 / $height);
                     return self::recursiveHelper(

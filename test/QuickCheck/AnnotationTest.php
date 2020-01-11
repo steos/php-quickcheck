@@ -208,7 +208,7 @@ class AnnotationTest extends TestCase {
 
     function testCheckByName() {
         $result = Annotation::check('QuickCheck\_annotation_test_function');
-        $this->assertTrue($result['result']);
+        $this->assertSuccess($result);
     }
 
     function testTypeByVariable() {
@@ -218,7 +218,7 @@ class AnnotationTest extends TestCase {
 
     function testCheckByVariable() {
         $result = Annotation::check(self::$fun);
-        $this->assertTrue($result['result']);
+        $this->assertSuccess($result);
     }
 
     function testTypeByInvoke() {
@@ -228,7 +228,7 @@ class AnnotationTest extends TestCase {
 
     function testCheckByInvoke() {
         $result = Annotation::check(self::$invoke);
-        $this->assertTrue($result['result']);
+        $this->assertSuccess($result);
     }
 
     function testStatic() {
@@ -371,26 +371,30 @@ class AnnotationTest extends TestCase {
      */
     function testCheck($function) {
         $object = Annotation::check(self::getObjectCallable($function));
-        $this->assertTrue($object['result']);
+        $this->assertSuccess($object);
     }
 
     function testRegister() {
-        $generator = Generator::any()->fmap(function() { return new _TestClass(); });
+        $generator = Generator::any()->map(function() { return new _TestClass(); });
         Annotation::register('_TestClass', $generator);
 
         $array = Annotation::check(self::getArrayCallable('custom_type'), null, 1);
         $string = Annotation::check(self::getStringCallable('custom_type'), null, 1);
         $object = Annotation::check(self::getObjectCallable('custom_type'), null, 1);
 
-        $this->assertTrue($array['result']);
-        $this->assertTrue($string['result']);
-        $this->assertTrue($object['result']);
+        $this->assertSuccess($array);
+        $this->assertSuccess($string);
+        $this->assertSuccess($object);
     }
 
     function testDuplicateRegister() {
         $this->expectException(DuplicateGeneratorException::class);
-        $generator = Generator::any()->fmap(function() { return new _TestClass(); });
+        $generator = Generator::any()->map(function() { return new _TestClass(); });
         Annotation::register('_TestClass', $generator);
         Annotation::register('_TestClass', $generator);
+    }
+
+    function assertSuccess(CheckResult $x) {
+        $this->assertTrue($x->isSuccess());
     }
 }
