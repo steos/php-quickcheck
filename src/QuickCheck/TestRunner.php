@@ -75,10 +75,10 @@ class TestRunner
                 $failure = $this->executeTests($seed, $numTests, $check->property()->withMaxSize($maxSize), true);
                 $totalTestCount += $this->testCount;
                 if ($failure === null) {
-                    $this->writeLn("<bg=green;fg=black> OK </> $this->testCount");
+                    $this->writeLn("<bg=green;fg=black> OK </> t = $this->testCount, x = $maxSize");
                 } else {
                     $failures++;
-                    $this->writeLn("<bg=red;fg=white> QED. ($this->testCount tests) </>\n");
+                    $this->writeLn("<bg=red;fg=white> QED. ($this->testCount tests) </> x = $maxSize\n");
                     $this->executeShrinkSearch($failure);
                     $this->writeLn();
                 }
@@ -138,15 +138,15 @@ class TestRunner
         return $failure;
     }
 
-    private function formatTestArguments(PropertyTest $result, $lineLimit = 10) {
+    private function formatTestArguments(PropertyTest $result, $lineLimit = 10, $wiggle = 5) {
         $str = var_export($result->arguments(), true);
         //json_encode($xs, JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_INVALID_UTF8_IGNORE);
         $lines = explode("\n", $str);
         $lineCount = count($lines);
         $linesOut = array_slice($lines, 0, $lineLimit);
-        if ($lineCount > $lineLimit) {
+        if ($lineCount > $lineLimit + $wiggle) {
             $omitted = $lineCount - $lineLimit;
-            $linesOut[] = "\n<bg=cyan;fg=black><{$omitted} more lines have been omitted></>\n";
+            $linesOut[] = "\n<{$omitted} more lines have been omitted>\n";
         }
         return implode("\n", $linesOut);
     }
@@ -163,12 +163,12 @@ class TestRunner
     {
         /** @var PropertyTest $result */
         $result = $failure->getValue();
-        $this->write('Failing inputs: ');
+        $this->write('<bg=yellow;fg=black>Failing inputs:</> ');
         $this->writeLn($this->formatTestArguments($result));
         $this->writeLn();
 
         $info = $this->out->section();
-        $info->writeLn('Shrinking inputs...');
+        $info->writeLn('<bg=magenta;fg=black>Shrinking inputs...</>');
 
         $shrinkStart = microtime(true);
         /** @var ShrinkResult $smallest */
@@ -194,7 +194,7 @@ class TestRunner
         }
         $info->overwrite(sprintf('Shrinking inputs...done. (%.2f s)', microtime(true) - $shrinkStart));
         $progress->clear();
-        $this->write('Smallest failing inputs: ');
+        $this->write('<bg=cyan;fg=black>Smallest failing inputs:</> ');
         $this->writeLn($this->formatTestArguments($smallest->test()));
     }
 }
