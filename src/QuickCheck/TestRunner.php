@@ -70,7 +70,9 @@ class TestRunner
                 } else {
                     $this->write(sprintf('  %\'.-48s', $name));
                 }
-                $failure = $this->executeTests($seed, $check->numTests(), $check->property(), true);
+                $numTests = $this->numTests ?? $check->numTests();
+                $maxSize = $this->maxSize ?? $check->property()->maxSize();
+                $failure = $this->executeTests($seed, $numTests, $check->property()->withMaxSize($maxSize), true);
                 $totalTestCount += $this->testCount;
                 if ($failure === null) {
                     $this->writeLn("<bg=green;fg=black> OK </> $this->testCount");

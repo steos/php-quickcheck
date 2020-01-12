@@ -19,7 +19,7 @@ Test::check('has zero as identity')
             return $x + 0 === $x;
         });
 
-Test::check('is distributive')
+Test::check('is associative')
     ->times(1000)
     ->maxSize(1337)
     ->forAll(
