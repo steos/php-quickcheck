@@ -22,9 +22,8 @@ function searchFiles($autoloadSearchPaths) {
 }
 
 $autoload = searchFiles([
-    '/../../autoload.php',
+    '/../../../autoload.php',
     '/../vendor/autoload.php',
-    '/vendor/autoload.php'
 ]);
 
 if ($autoload === null) {
