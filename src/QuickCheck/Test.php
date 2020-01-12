@@ -53,8 +53,8 @@ class Test
         echo "Usage: quickcheck [ FILE | DIRECTORY ] [OPTIONS]", PHP_EOL;
     }
 
-    static private function loadSuite($file) {
-        self::$currentSuite = new CheckSuite(basename($file, '.php'));
+    static private function requireSuiteFile($name, $file) {
+        self::$currentSuite = new CheckSuite($name);
         require_once $file;
         if (!self::$currentSuite->empty()) {
             self::$suites[] = self::$currentSuite;
@@ -66,13 +66,15 @@ class Test
         self::$currentSuite = null;
 
         if (is_dir($args[0])) {
-            $it = new \DirectoryIterator($args[0]);
+            $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($args[0]));
+            $real = realpath($args[0]);
             foreach ($it as $file) {
-                if ($file->isDot() || $file->getExtension() !== 'php') continue;
-                self::loadSuite($file->getRealPath());
+                if ($file->getExtension() !== 'php') continue;
+                $name = substr($file->getRealPath(), strlen($real) + 1, -4);
+                self::requireSuiteFile($name, $file->getRealPath());
             }
         } elseif (is_file($args[0])) {
-            self::loadSuite($args[0]);
+            self::requireSuiteFile(basename($args[0], '.php'), $args[0]);
         } else {
             echo "Error: \"$args[0]\" is not a valid directory or file.", PHP_EOL;
             self::printUsage();
