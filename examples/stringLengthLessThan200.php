@@ -1,10 +1,13 @@
 <?php
 
 use \QuickCheck\Generator as Gen;
-use \QuickCheck\Property;
+use \QuickCheck\Test;
 
-return Property::forAll(
+Test::forAll(
     [Gen::asciiStrings()],
     function($x){
         return strlen($x) < 200;
-    });
+    },
+    1000,
+    400
+);

@@ -1,7 +1,7 @@
 <?php
 
 use \QuickCheck\Generator as Gen;
-use \QuickCheck\Property;
+use \QuickCheck\Test;
 
 function isAscending(array $xs) {
     $last = count($xs) - 1;
@@ -17,7 +17,7 @@ function myBrokenSort(array $xs) {
     return $xs;
 }
 
-return Property::forAll(
+Test::forAll(
     [Gen::ints()->intoArrays()],
     function(array $xs) {
         return isAscending(myBrokenSort($xs));

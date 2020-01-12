@@ -5,13 +5,15 @@ namespace QuickCheck;
 class Property
 {
     private $generator;
+    private $maxSize;
 
-    private function __construct(Generator $generator)
+    private function __construct(Generator $generator, int $maxSize = 200)
     {
         $this->generator = $generator;
+        $this->maxSize = $maxSize;
     }
 
-    public static function forAll(array $args, callable $f): self
+    public static function forAll(array $args, callable $f, int $maxSize = 200): self
     {
         return new self(Generator::tuples($args)->map(function ($args) use ($f) {
             try {
@@ -20,24 +22,27 @@ class Property
                 $result = $e;
             }
             return new PropertyTest($result, $f, $args);
-        }));
+        }), $maxSize);
     }
 
-    function randomTests(Random $rng, int $maxSize) {
+    function withMaxSize(int $maxSize) {
+        return new Property($this->generator, $maxSize);
+    }
+
+    function randomTests(Random $rng) {
         return Lazy::map(
             function($size) use ($rng) {
                 return $this->generator->call($rng, $size);
             },
-            Generator::sizes($maxSize)
+            Generator::sizes($this->maxSize)
         );
     }
 
-    static function check(self $prop, int $numTests, $opts = []): CheckResult {
-        $seed = @$opts['seed'] ?? intval(microtime(true) * 1000);
-        $maxSize = @$opts['max_size'] ?? 200;
+    static function check(self $prop, int $numTests, int $seed = null): CheckResult {
+        $seed = $seed ?? intval(microtime(true) * 1000);
         $rng = new Random($seed);
         /** @var ShrinkTreeNode[] $tests */
-        $tests = Lazy::take($numTests, $prop->randomTests($rng, $maxSize));
+        $tests = Lazy::take($numTests, $prop->randomTests($rng));
         $testCount = 0;
         foreach ($tests as $node) {
             $testCount++;
@@ -53,5 +58,9 @@ class Property
             }
         }
         return new Success($testCount, $seed);
+    }
+
+    function maxSize() {
+        return $this->maxSize;
     }
 }

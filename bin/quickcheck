@@ -34,4 +34,4 @@ if ($autoload === null) {
 
 require_once $autoload;
 
-\QuickCheck\Console\App::main();
+\QuickCheck\Test::main($argv);

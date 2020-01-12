@@ -75,11 +75,11 @@ Smallest failing input:
 As you can see the list that failed was `[3,-5,-1,-1,-6]` which got shrunk to `[0,-1]`. For each run
 the exact failing values are different but it will always shrink down to `[1,0]` or `[0,-1]`.
 
-The result also contains the seed so you can run the exact same test by passing it as an option
+The result also contains the seed so you can run the exact same test by passing it as an argument
 to the check function:
 
 ```php
-Property::check($brokenSort, 100, ['seed' => 1411398418957])
+Property::check($brokenSort, 100, 1411398418957)
         ->dump('json_encode');
 ```
 

@@ -1,10 +1,12 @@
 <?php
 
 use \QuickCheck\Generator as Gen;
-use \QuickCheck\Property;
+use \QuickCheck\Test;
 
-return Property::forAll(
-    [Gen::strings()],
+Test::forAll(
+    [Gen::asciiStrings()],
     function($s) {
         return !is_numeric($s);
-    });
+    },
+    1000
+);

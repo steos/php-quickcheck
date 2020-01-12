@@ -1,9 +1,9 @@
 <?php
 
 use \QuickCheck\Generator as Gen;
-use \QuickCheck\Property;
+use \QuickCheck\Test;
 
-return Property::forAll(
+Test::forAll(
     [Gen::ints()->intoArrays()],
     function($xs) {
         $n = count(array_filter($xs, function($n) {

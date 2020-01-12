@@ -11,27 +11,27 @@ class PropertyConstraint extends Constraint
     /**
      * @var int
      */
-    private $size;
+    private $numTests;
 
     /**
-     * @var array
+     * @var int
      */
-    private $opts;
+    private $seed;
 
-    public function __construct(int $n, array $opts = [])
+    public function __construct(int $n, int $seed = null)
     {
-        $this->size = $n;
-        $this->opts = $opts;
+        $this->numTests = $n;
+        $this->seed = $seed;
     }
 
-    public static function check($n = 100, array $opts = [])
+    public static function check($n = 100, int $seed = null)
     {
-        return new self($n, $opts);
+        return new self($n, $seed);
     }
 
     public function evaluate($prop, string $description = '', bool $returnResult = false)
     {
-        $result = Property::check($prop, $this->size, $this->opts);
+        $result = Property::check($prop, $this->numTests, $this->seed);
         return parent::evaluate($result, $description, $returnResult);
     }
 

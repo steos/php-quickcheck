@@ -13,30 +13,49 @@ Generative testing, also called property-based testing, is about
 describing the behaviour of your system in terms of properties that
 should hold true for all possible input.
 
-### Example
+### Quickstart
+
+Install PHPQuickCheck:
+
+```
+composer require steos/quickcheck:dev-master --dev
+```
+
+Create a property test `test/stringsAreNeverNumeric.php`:
 
 ```php
+<?php
 use QuickCheck\Generator as Gen;
-use QuickCheck\Property;
+use QuickCheck\Test;
 
-$stringsAreNeverNumeric = Property::forAll(
+Test::forAll(
     [Gen::asciiStrings()],
     function($str) {
         return !is_numeric($str);
     }
 );
-
-$result = Property::check($stringsAreNeverNumeric, 1000);
-$result->dump('json_encode');
 ```
 
+And run quickcheck against it:
+
 ```
-Failed after 834 tests
-Seed: 1578763578270
-Failing input:
-["9E70"]
-Smallest failing input:
-["0"]
+$> vendor/bin/quickcheck test/stringsAreNeverNumeric.php -t 1000
+PHPQuickCheck 2.0.0-dev. Don't write tests. Generate them.
+
+  834/1000 [=========================================>--------]  83%
+
+Time: 454 ms, Memory: 4.00 MB, Seed: 1578763578270, maxSize: 200
+
+Failing inputs: array (
+  0 => '9E70',
+)
+
+Shrinking inputs...done. (0.00 s)
+Smallest failing inputs: array (
+  0 => '0',
+)
+
+QED. (834 tests)
 ```
 
 > Please note that this example and documentation refers to unreleased and unstable API.

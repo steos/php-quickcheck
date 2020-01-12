@@ -2,7 +2,7 @@
 
 To use PHPQuickCheck with PHPUnit, the assertion `\QuickCheck\PHPUnit\PropertyConstraint` is provided.
 It provides a static constructor method `PropertyConstraint::check`.
-Similar to `Property::check`, the method takes the size and allows also passing options if needed.
+Similar to `Property::check`, the method takes the size and allows also passing the seed if needed.
 
 ```php
 public function testStringsAreLessThanTenChars()
@@ -14,7 +14,7 @@ public function testStringsAreLessThanTenChars()
 }
 ```
 
-The assertion will delegate to `Property::check($size, $opts)`, and if the function returns anything but `true`, it will display a formatted failure description.
+The assertion will delegate to `Property::check($size, $seed)`, and if the function returns anything but `true`, it will display a formatted failure description.
 
 ```
 Failed asserting that property is true.
@@ -26,4 +26,4 @@ array (
 
 If an exception is thrown or a PHPUnit assertion fails, the message will be included in the output.
 
-To reproduce a test result the displayed seed can be passed via `PropertyConstraint::check($size, ['seed' => 1578486446175])`.
+To reproduce a test result the displayed seed can be passed via `PropertyConstraint::check($size, 1578486446175)`.
