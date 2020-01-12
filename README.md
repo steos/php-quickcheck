@@ -40,6 +40,9 @@ And run quickcheck against it:
 
 ```
 $> vendor/bin/quickcheck test/stringsAreNeverNumeric.php -t 1000
+```
+
+```
 PHPQuickCheck 2.0.0-dev. Don't write tests. Generate them.
 
   834/1000 [=========================================>--------]  83%
@@ -63,6 +66,10 @@ QED. (834 tests)
 
 ### Documentation
 
+- [CLI Reference](doc/cli-reference.md)
+
+#### API
+
 - [Introduction](doc/introduction.md)
 - [PHPUnit Support](doc/phpunit.md)
 - [Using Annotations](doc/annotations.md)
@@ -72,14 +79,6 @@ QED. (834 tests)
 
 - [A QuickCheck Primer for PHP Developers](https://medium.com/@thinkfunctional/a-quickcheck-primer-for-php-developers-5ffbe20c16c8)
 - [Testing the hard stuff and staying sane (John Hughes)](https://www.youtube.com/watch?v=zi0rHwfiX1Q)
-
-### Installation
-
-PHPQuickCheck is available via Packagist so you can require it with composer:
-
-```
-$ composer require steos/quickcheck
-```
 
 ### xdebug
 
