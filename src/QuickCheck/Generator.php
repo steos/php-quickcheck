@@ -300,22 +300,50 @@ class Generator
      * creates a generator that produces arrays whose elements
      * are chosen from $gen.
      *
+     * If no $min or $max are specified the array size will be bounded by the
+     * generators maxSize argument and shrink to the empty array.
+     *
+     * If $min and $max is specified the array size will be bounded by $min and $max (inclusive)
+     * and will not shrink below $min.
+     *
+     * If $min is specified without $max the generated arrays will always be of size $min
+     * and don't shrink in size at all (equivalent to tuple).
+     *
      * @param Generator $gen
+     * @param int $min
+     * @param int $max
      * @return Generator
      */
-    public static function arraysOf(self $gen)
+    public static function arraysOf(self $gen, int $min = null, int $max = null)
     {
-        $sized = self::sized(function ($s) {
-            return self::choose(0, $s);
-        });
-        return $sized->flatMap(function (ShrinkTreeNode $numRose) use ($gen) {
-            $seq = self::sequence(Lazy::repeat($numRose->getValue(), $gen));
-            return $seq->flatMap(function ($roses) {
-                return self::pure(ShrinkTreeNode::shrink(function (...$xs) {
-                    return $xs;
-                }, $roses));
+        if ($min !== null && $max === null) {
+            return self::tuples(Lazy::realize(Lazy::repeat($min, $gen)));
+        } else if ($min !== null && $max !== null) {
+            return self::choose($min, $max)->flatMap(function(ShrinkTreeNode $num) use ($gen, $min, $max) {
+                $seq = self::sequence(Lazy::repeat($num->getValue(), $gen));
+                return $seq->flatMap(function($roses) use ($min, $max) {
+                    return self::pure(ShrinkTreeNode::shrink(function (...$xs) {
+                        return $xs;
+                    }, $roses))->flatMap(function(ShrinkTreeNode $rose) use ($min, $max) {
+                        return self::pure($rose->filter(function($x) use ($min, $max) {
+                            return count($x) >= $min && count($x) <= $max;
+                        }));
+                    });
+                });
             });
-        });
+        } else {
+            $sized = self::sized(function ($s) {
+                return self::choose(0, $s);
+            });
+            return $sized->flatMap(function (ShrinkTreeNode $numRose) use ($gen) {
+                $seq = self::sequence(Lazy::repeat($numRose->getValue(), $gen));
+                return $seq->flatMap(function ($roses) {
+                    return self::pure(ShrinkTreeNode::shrink(function (...$xs) {
+                        return $xs;
+                    }, $roses));
+                });
+            });
+        }
     }
 
     /**
@@ -324,9 +352,9 @@ class Generator
      *
      * @return Generator
      */
-    public function intoArrays()
+    public function intoArrays(int $min = null, int $max = null)
     {
-        return self::arraysOf($this);
+        return self::arraysOf($this, $min, $max);
     }
 
     /**

@@ -22,12 +22,35 @@ class QuicknDirtyTest extends TestCase {
      * @dataProvider lists
      */
     function testStringList($list) {
-        $this->assertTrue(is_array($list));
+        $this->assertIsArray($list);
         $this->assertContainsOnly('int', array_keys($list));
         $this->assertContainsOnly('string', $list);
     }
     function lists() {
         return Gen::tuples(Gen::asciiStrings()->intoArrays())->takeSamples();
+    }
+
+    /**
+     * @dataProvider minMaxArrays
+     */
+    function testMinMaxArrays($xs) {
+        $this->assertIsArray($xs);
+        $this->assertGreaterThanOrEqual(23, count($xs));
+        $this->assertLessThanOrEqual(42, count($xs));
+    }
+    function minMaxArrays() {
+        return Gen::tuples(Gen::ints()->intoArrays(23, 42))->takeSamples(50);
+    }
+
+    /**
+     * @dataProvider fixedLengthArrays
+     */
+    function testFixedLengthArrays($xs) {
+        $this->assertIsArray($xs);
+        $this->assertCount(23, $xs);
+    }
+    function fixedLengthArrays() {
+        return Gen::tuples(Gen::ints()->intoArrays(23))->takeSamples(50);
     }
 
     function testQuickCheckShrink() {
