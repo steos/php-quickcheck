@@ -101,7 +101,8 @@ The phpunit config sets it to `9999`.
 
 ## Project Status
 
-PHPQuickCheck is somewhat experimental. The core functionality of clojure.test.check (as of March 2016) has been implemented.
+PHPQuickCheck is somewhat experimental. The core functionality of clojure.test.check (v0.5.9, August 2014) has been implemented.
+There have been a number of improvements to clojure.test.check since the initial port which have not been implemented yet.
 
 ### Contributing
 
