@@ -27,6 +27,10 @@ class ShrinkResult
         return $this->test;
     }
 
+    /**
+     * @param ShrinkTreeNode $tree
+     * @return \Generator|ShrinkResult[]
+     */
     static function searchSmallest(ShrinkTreeNode $tree)
     {
         $nodes = $tree->getChildren();

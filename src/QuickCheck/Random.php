@@ -35,7 +35,7 @@ class Random
         }
         $this->setSeed($seed !== null ? $seed : intval(1000 * microtime(true)));
     }
-    public function setSeed($seed)
+    private function setSeed($seed)
     {
         $this->seed = self::mask($seed ^ self::MULTIPLIER);
     }

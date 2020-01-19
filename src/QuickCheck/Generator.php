@@ -186,7 +186,7 @@ class Generator
         );
     }
 
-    public static function intRoseTree($val)
+    private static function intRoseTree($val)
     {
         return new ShrinkTreeNode($val, function () use ($val) {
             return Lazy::map(
