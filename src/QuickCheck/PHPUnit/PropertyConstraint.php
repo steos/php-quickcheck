@@ -18,18 +18,26 @@ class PropertyConstraint extends Constraint
      */
     private $seed;
 
+    private $showExceptionStacktrace = false;
+
     public function __construct(int $n, int $seed = null)
     {
         $this->numTests = $n;
         $this->seed = $seed;
     }
 
-    public static function check($n = 100, int $seed = null)
+    public static function check($n = 100, int $seed = null): self
     {
         return new self($n, $seed);
     }
 
-    public function evaluate($prop, string $description = '', bool $returnResult = false)
+    public function withExceptionStackrace(): self
+    {
+        $this->showExceptionStacktrace = true;
+        return $this;
+    }
+
+    public function evaluate($prop, string $description = '', bool $returnResult = false): self
     {
         $result = Property::check($prop, $this->numTests, $this->seed);
         return parent::evaluate($result, $description, $returnResult);
@@ -57,8 +65,9 @@ class PropertyConstraint extends Constraint
     protected function additionalFailureDescription($failure): string
     {
         return sprintf(
-            "%sTest runs: %d, seed: %s, smallest shrunk value(s):\n%s",
+            "%s%sTest runs: %d, seed: %s, smallest shrunk value(s):\n%s",
             $this->extractExceptionMessage($failure->test()->result()),
+            $this->extractExceptionStacktrace($failure->test()->result()),
             $failure->numTests(),
             $failure->seed(),
             var_export($failure->shrunk()->test()->arguments(), true)
@@ -68,6 +77,13 @@ class PropertyConstraint extends Constraint
     private function extractExceptionMessage($result): string
     {
         return $result instanceof \Exception ? $result->getMessage() . "\n" : '';
+    }
+
+    private function extractExceptionStacktrace($result): string
+    {
+        return $this->showExceptionStacktrace && $result instanceof \Exception ?
+            $result->getTraceAsString() . "\n" :
+            '';
     }
 
 }
