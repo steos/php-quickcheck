@@ -31,7 +31,7 @@ class PropertyConstraint extends Constraint
         return new self($n, $seed);
     }
 
-    public function withExceptionStackrace(): self
+    public function withExceptionStacktrace(): self
     {
         $this->showExceptionStacktrace = true;
         return $this;
