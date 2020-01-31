@@ -67,6 +67,7 @@ QED. (834 tests)
 ### Documentation
 
 - [CLI Reference](doc/cli-reference.md)
+- [Writing CLI Tests](doc/cli-writing-tests.md)
 
 #### API
 

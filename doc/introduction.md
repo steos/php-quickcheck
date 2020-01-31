@@ -1,4 +1,28 @@
-# Introduction
+# API Introduction
+
+Property-based testing is all about defining properties that should hold true for all possible input
+and then trying to falsify them.
+In practice that means we need to define a predicate function and its possible inputs.
+Quickcheck will then run this predicate function for any number of randomly generated inputs.
+
+## `QuickCheck\Generator`
+
+Inputs are defined using so-called generators (not to be confused with PHP generators).
+A generator is a function that produces random values of a certain type.
+In PHPQuickCheck the `QuickCheck\Generator` class is a wrapper around this function
+and provides a number of factory functions to create basic generators and some useful combinators
+to combine and transform generators.
+
+[Generator Examples](./generators.md)
+
+## `QuickCheck\Property`
+
+Properties can be defined with the `Property::forAll` function and checked with `Property::check`:
+
+```php
+static Property::forAll ( array $generators, callable $predicate [, int $maxSize = 200 ]) : Property
+static Property::check ( Property $prop, int $numTests [, int $seed = null ] ) : CheckResult
+```
 
 Here is a failing example:
 
@@ -10,7 +34,13 @@ $stringsAreNeverNumeric = Property::forAll(
     }
 );
 
-$result = Property::check($stringsAreNeverNumeric, 1000);
+$result = Property::check($stringsAreNeverNumeric, 10000);
+```
+
+`Property::check` returns a `QuickCheck\CheckResult` which has a convenience function to
+dump the result to stdout:
+
+```php
 $result->dump('json_encode');
 ```
 
@@ -25,7 +55,7 @@ Smallest failing input:
 ["0"]
 ```
 
-What this tells us that after 834 random tests the property was sucessfully falsified.
+This tells us that after 834 random tests the property was successfully falsified.
 The exact argument that caused the failure was "9E70" which then got shrunk to "0".
 So our minimal failing case is the string "0".
 

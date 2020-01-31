@@ -1,13 +1,13 @@
 # CLI Reference
 
-Usage:
+### Usage
 ```
 quickcheck [ FILE | DIR ] [OPTIONS]
 ```
 
 The first argument must be a file or directory.
 
-Examples:
+### Examples
 
 ```
 quickcheck test
@@ -15,7 +15,7 @@ quickcheck test/example.php
 quickcheck test/example.php -t 1000 -s 123
 ```
 
-Options:
+### Options
 
 ```
 -t  number of tests to run
