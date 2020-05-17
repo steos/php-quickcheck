@@ -37,7 +37,7 @@ class PropertyConstraint extends Constraint
         return $this;
     }
 
-    public function evaluate($prop, string $description = '', bool $returnResult = false): self
+    public function evaluate($prop, string $description = '', bool $returnResult = false): ?bool
     {
         $result = Property::check($prop, $this->numTests, $this->seed);
         return parent::evaluate($result, $description, $returnResult);

@@ -7,16 +7,18 @@ Similar to `Property::check`, the method takes the size and allows also passing 
 ```php
 public function testStringsAreLessThanTenChars()
 {
-    $property = Property::forAll([Gen::strings()], function ($s): bool {
-        return 10 > strlen($s);
-    });
+    $property = Property::forAll(
+        [Gen::strings()],
+        fn ($s): bool => 10 > strlen($s)
+    );
+
     $this->assertThat($property, PropertyConstraint::check(50)); // will fail
 }
 ```
 
 The assertion will delegate to `Property::check($size, $seed)`, and if the function returns anything but `true`, it will display a formatted failure description.
 
-```
+```txt
 Failed asserting that property is true.
 Tests runs: 16, failing size: 15, seed: 1578486446175, smallest shrunk value(s):
 array (
