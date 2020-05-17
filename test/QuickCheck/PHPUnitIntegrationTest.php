@@ -14,7 +14,7 @@ class PHPUnitIntegrationTest extends TestCase {
     {
         $property = Property::forAll(
             [Gen::strings()],
-            fn ($s): bool => 10 > strlen($s)
+            function ($s) { return 10 > strlen($s); }
         );
 
         $this->assertFalse(
