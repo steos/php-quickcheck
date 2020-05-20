@@ -18,7 +18,7 @@ should hold true for all possible input.
 Install PHPQuickCheck:
 
 ```
-composer require steos/quickcheck:dev-master --dev
+composer require steos/quickcheck --dev
 ```
 
 Create a property test `test/stringsAreNeverNumeric.php`:
@@ -43,7 +43,7 @@ $> vendor/bin/quickcheck test/stringsAreNeverNumeric.php -t 1000
 ```
 
 ```
-PHPQuickCheck 2.0.0-dev. Don't write tests. Generate them.
+PHPQuickCheck 2.0.0. Don't write tests. Generate them.
 
   834/1000 [=========================================>--------]  83%
 
@@ -60,9 +60,6 @@ Smallest failing inputs: array (
 
 QED. (834 tests)
 ```
-
-> Please note that this example and documentation refers to unreleased and unstable API.
-> For the documentation of the latest released stable API refer to the [v1.0.0 release tree](https://github.com/steos/php-quickcheck/tree/v1.0.0)
 
 ### Documentation
 
@@ -123,6 +120,7 @@ $ docker run --rm -it --mount src=$(pwd),target=/quickcheck,type=bind php-quickc
 # cd /quickcheck
 # composer install
 # vendor/bin/phpunit
+# bin/quickcheck examples
 ```
 
 The image also contains a small script `toggle-ext` to toggle php extensions on and off:
