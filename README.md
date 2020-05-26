@@ -107,7 +107,7 @@ There have been a number of improvements to clojure.test.check since the initial
 All contributions are welcome.
 
 Feel free to fork and send a pull request. If you intend to make
-major changes please get in touch so we can coordinate our efforts.
+major changes please get in touch, so we can coordinate our efforts.
 
 #### Dev Setup
 
@@ -137,7 +137,7 @@ All credit goes to clojure.test.check, this project is mostly just a port.
 
 ## Requirements
 
-Requires PHP 7.3.x with 64 bit integers. The gmp extension is recommended but not required.
+Requires PHP 7.4.x with 64 bit integers. The gmp extension is recommended but not required.
 
 ## License
 
