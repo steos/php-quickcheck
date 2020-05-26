@@ -1,9 +1,11 @@
 <?php
 
-use \QuickCheck\Generator as Gen;
-use \QuickCheck\Test;
+declare(strict_types=1);
 
-function isAscending(array $xs) {
+use QuickCheck\Generator as Gen;
+use QuickCheck\Test;
+
+function isAscending(array $xs): bool {
     $last = count($xs) - 1;
     for ($i = 0; $i < $last; ++$i) {
         if ($xs[$i] > $xs[$i + 1]) {
@@ -13,13 +15,13 @@ function isAscending(array $xs) {
     return true;
 }
 
-function myBrokenSort(array $xs) {
+function myBrokenSort(array $xs): array {
     return $xs;
 }
 
 Test::forAll(
     [Gen::ints()->intoArrays()],
-    function(array $xs) {
+    function(array $xs): bool {
         return isAscending(myBrokenSort($xs));
     }
 );
