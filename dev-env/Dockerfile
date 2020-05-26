@@ -1,4 +1,4 @@
-FROM php:7.4.1-cli
+FROM php:7.3.18-cli
 RUN apt-get update && apt-get install -y less git libgmp10-dev unzip
 RUN docker-php-ext-configure gmp && docker-php-ext-install -j$(nproc) gmp
 RUN pecl install xdebug && docker-php-ext-enable xdebug
