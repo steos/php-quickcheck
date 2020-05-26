@@ -112,7 +112,7 @@ major changes please get in touch so we can coordinate our efforts.
 #### Dev Setup
 
 The repository contains a Dockerfile to quickly set up a dev environment.
-It is based on the `php:7.4.1-cli` image and adds xdebug, gmp and composer.
+It is based on the `php:7.3.18-cli` image and adds xdebug, gmp and composer.
 
 ```
 $ docker build -t php-quickcheck-dev dev-env
