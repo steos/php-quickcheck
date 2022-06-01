@@ -20,5 +20,8 @@
     },
     "bin": [
         "bin/quickcheck"
-    ]
+    ],
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
 }
