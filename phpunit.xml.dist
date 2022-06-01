@@ -9,7 +9,6 @@
     beStrictAboutTodoAnnotatedTests="true"
     bootstrap="vendor/autoload.php"
     colors="true"
-    forceCoversAnnotation="true"
     verbose="true"
 >
     <coverage>
