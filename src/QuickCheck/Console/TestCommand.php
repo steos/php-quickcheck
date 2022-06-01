@@ -8,6 +8,7 @@ use QuickCheck\PropertyTest;
 use QuickCheck\Random;
 use QuickCheck\ShrinkResult;
 use QuickCheck\ShrinkTreeNode;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'test')]
 class TestCommand extends Command
 {
     protected static $defaultName = 'test';
