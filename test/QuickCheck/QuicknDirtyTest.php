@@ -59,7 +59,7 @@ class QuicknDirtyTest extends TestCase {
         });
 
         $result = Property::check($p, 10000);
-        $this->assertNotTrue($result, 'property was not falsified');
+        $this->assertInstanceOf(Failure::class, $result, 'property was not falsified');
 
         $smallest = $result->shrunk()->test()->arguments()[0];
         $this->assertEquals('0', $smallest,

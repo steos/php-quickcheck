@@ -60,7 +60,7 @@ class TestCommand extends Command
         $startTime = microtime(true);
         $rng = new Random($this->seed);
         /** @var ShrinkTreeNode[] $tests */
-        $tests = Lazy::take($this->numTests, $property->randomTests($rng, $this->maxSize));
+        $tests = Lazy::take($this->numTests, $property->randomTests($rng));
         /** @var ShrinkTreeNode|null $failure */
         $failure = null;
         $this->testCount = 0;

@@ -146,7 +146,7 @@ class _AnnotationTestClass {
      * @param _TestClass $a
      * @return bool
      */
-    static function custom_type(_TestClass $a) {
+    static function custom_type($a) {
         return is_object($a) && $a instanceof _TestClass;
     }
 
