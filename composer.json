@@ -4,7 +4,7 @@
     "license": "BSD-3-Clause",
     "require": {
         "php-64bit": ">=7.3.0",
-        "symfony/console": "^5.0"
+        "symfony/console": "^5.0 || ^6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.1"
