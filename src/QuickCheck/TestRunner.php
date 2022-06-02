@@ -23,7 +23,7 @@ class TestRunner
      * @param int $seed
      */
     function execute(array $suites, int $seed) {
-        $this->writeLn("PHPQuickCheck 2.0.0. Don't write tests. Generate them.");
+        $this->writeLn("PHPQuickCheck 2.0.2. Don't write tests. Generate them.");
         if (function_exists('xdebug_is_enabled')) {
             ini_set('xdebug.max_nesting_level', '999999');
             $this->writeLn('<bg=yellow;fg=black>Warning: xdebug is enabled. This has a high performance impact.</>');

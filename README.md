@@ -41,7 +41,7 @@ $> vendor/bin/quickcheck test/stringsAreNeverNumeric.php -t 1000
 ```
 
 ```
-PHPQuickCheck 2.0.1. Don't write tests. Generate them.
+PHPQuickCheck 2.0.2. Don't write tests. Generate them.
 
   834/1000 [=========================================>--------]  83%
 
