@@ -1,7 +1,5 @@
 # PHPQuickCheck
 
-[![Build Status](https://travis-ci.org/steos/php-quickcheck.svg?branch=master)](https://travis-ci.org/steos/php-quickcheck)
-
 PHPQuickCheck is a generative testing library for PHP based on
 clojure.test.check.
 
@@ -43,7 +41,7 @@ $> vendor/bin/quickcheck test/stringsAreNeverNumeric.php -t 1000
 ```
 
 ```
-PHPQuickCheck 2.0.0. Don't write tests. Generate them.
+PHPQuickCheck 2.0.1. Don't write tests. Generate them.
 
   834/1000 [=========================================>--------]  83%
 
@@ -141,6 +139,6 @@ Requires PHP 7.3.x with 64 bit integers. The gmp extension is recommended but no
 
 ## License
 
-Copyright © 2020, Stefan Oestreicher and contributors.
+Copyright © 2022, Stefan Oestreicher and contributors.
 
 Distributed under the terms of the BSD (3-Clause) license.
